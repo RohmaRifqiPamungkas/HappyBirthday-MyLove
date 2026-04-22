@@ -1,0 +1,6 @@
+# Keep personal photos private, but allow music files in assets/
+assets/*
+!assets/*.mp3
+!assets/*.wav
+!assets/*.m4a
+!assets/*.ogg
