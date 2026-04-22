@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday, My Love</title>
+  <meta name="theme-color" content="#0d0810">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Dancing+Script:wght@600;700&family=Lato:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============ SIDE DOT NAVIGATION ============ -->
+  <nav class="dot-nav" aria-label="Page Navigation">
+    <ul class="dot-nav__list">
+      <li class="dot-nav__item active" data-target="hero">
+        <button class="dot-nav__btn" aria-label="Home">
+          <span class="dot-nav__label">Home</span>
+          <span class="dot-nav__dot"></span>
+        </button>
+      </li>
+      <li class="dot-nav__item" data-target="story">
+        <button class="dot-nav__btn" aria-label="Our Story">
+          <span class="dot-nav__label">Our Story</span>
+          <span class="dot-nav__dot"></span>
+        </button>
+      </li>
+      <li class="dot-nav__item" data-target="gallery">
+        <button class="dot-nav__btn" aria-label="Gallery">
+          <span class="dot-nav__label">Gallery</span>
+          <span class="dot-nav__dot"></span>
+        </button>
+      </li>
+      <li class="dot-nav__item" data-target="letter">
+        <button class="dot-nav__btn" aria-label="Letter">
+          <span class="dot-nav__label">Letter</span>
+          <span class="dot-nav__dot"></span>
+        </button>
+      </li>
+      <li class="dot-nav__item" data-target="reasons">
+        <button class="dot-nav__btn" aria-label="Reasons">
+          <span class="dot-nav__label">Reasons</span>
+          <span class="dot-nav__dot"></span>
+        </button>
+      </li>
+      <li class="dot-nav__item" data-target="birthday">
+        <button class="dot-nav__btn" aria-label="Birthday">
+          <span class="dot-nav__label">Birthday</span>
+          <span class="dot-nav__dot"></span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ============ PAGE 1: HERO ============ -->
+  <section id="hero" class="page page--hero">
+    <canvas id="petals-canvas" aria-hidden="true"></canvas>
+    <div class="hero__content">
+      <p class="hero__pretitle fade-up" data-delay="200">specially made for</p>
+      <!-- [CUSTOMIZE] Ganti dengan nama kekasihmu -->
+      <h1 class="hero__name fade-up" data-delay="450">Ebeb Sayang</h1>
+      <div class="hero__divider fade-up" data-delay="650">
+        <span class="hero__line"></span>
+        <span class="hero__heart">♥</span>
+        <span class="hero__line"></span>
+      </div>
+      <p class="hero__tagline fade-up" data-delay="850">
+        dari orang yang genuinely sayang banget sama si ebeb
+      </p>
+      <button class="hero__cta fade-up" data-delay="1050" onclick="scrollToSection('story')">
+        Yukk Mulai dari Sini
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+      </button>
+    </div>
+    <div class="hero__scroll-line" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============ PAGE 2: OUR STORY ============ -->
+  <section id="story" class="page page--light">
+    <div class="page__inner">
+      <div class="section-header reveal">
+        <p class="pre-title">Chapter One</p>
+        <h2 class="section-title">Our Story</h2>
+        <p class="section-desc">Every love story has a beginning and honestly, ours is my favorite one.</p>
+      </div>
+
+      <div class="timeline">
+
+        <!-- [CUSTOMIZE] Ganti tanggal, judul, dan deskripsi tiap milestone -->
+
+        <div class="timeline__item reveal" data-side="left">
+          <div class="timeline__marker"><div class="timeline__dot"></div></div>
+          <div class="timeline__card">
+            <span class="timeline__icon">✦</span>
+            <span class="timeline__date">The Beginning</span>
+            <h3 class="timeline__title">Hari Itu</h3>
+            <p class="timeline__desc">It was literally just a normal day tapi somehow jadi hari yang paling berkesan. Ngl, waktu itu gue ini nggak nyangka bakal sejauh ini sama kamu.</p>
+          </div>
+        </div>
+
+        <div class="timeline__item reveal" data-side="right">
+          <div class="timeline__marker"><div class="timeline__dot"></div></div>
+          <div class="timeline__card">
+            <span class="timeline__icon">☕</span>
+            <span class="timeline__date">First Date</span>
+            <h3 class="timeline__title">Dua Jam Jadi Enam</h3>
+            <p class="timeline__desc">We literally stayed disana sampe bosen and memutuskan untuk pindah. Nggak kerasa waktu berlalu which is honestly the best sign kalau vibes nya emang udah bener.</p>
+          </div>
+        </div>
+
+        <div class="timeline__item reveal" data-side="left">
+          <div class="timeline__marker"><div class="timeline__dot"></div></div>
+          <div class="timeline__card">
+            <span class="timeline__icon">♡</span>
+            <span class="timeline__date">The Moment</span>
+            <h3 class="timeline__title">I Just Knew</h3>
+            <p class="timeline__desc">It was just a quiet moment no big gesture, no dramatic scene. Tapi somehow I just knew. You were different, genuinely. Dan aku nggak mau overthink it lebih dari itu.</p>
+          </div>
+        </div>
+
+        <div class="timeline__item reveal" data-side="right">
+          <div class="timeline__marker"><div class="timeline__dot"></div></div>
+          <div class="timeline__card">
+            <span class="timeline__icon">✈</span>
+            <span class="timeline__date">Our Adventure</span>
+            <h3 class="timeline__title">Us Against the World</h3>
+            <p class="timeline__desc">Every trip, every random outing, every detour yang nggak planned always better with you. Lowkey, I wouldn't want it any other way.</p>
+          </div>
+        </div>
+
+        <div class="timeline__item reveal" data-side="left">
+          <div class="timeline__marker"><div class="timeline__dot timeline__dot--now"></div></div>
+          <div class="timeline__card timeline__card--highlight">
+            <span class="timeline__icon">🎂</span>
+            <span class="timeline__date">Today</span>
+            <h3 class="timeline__title">Happy Birthday, Love</h3>
+            <p class="timeline__desc">Another year of you being in this world. Another year I get to be by your side which is, honestly, everything. Genuinely wouldn't trade it for anything.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 3: GALLERY ============ -->
+  <section id="gallery" class="page page--dark">
+    <div class="page__inner">
+      <div class="section-header reveal">
+        <p class="pre-title">Chapter Two</p>
+        <h2 class="section-title section-title--light">Our Memories</h2>
+        <p class="section-desc section-desc--light">Kumpulan momen yang literally nggak mau aku lupa.</p>
+      </div>
+
+      <!-- [CUSTOMIZE] Ganti background-image dengan path foto kamu -->
+
+      <div class="gallery-grid">
+
+        <div class="polaroid reveal" data-caption="awal dari segalanya">
+          <div class="polaroid__img" style="background-image: url('assets/dayone.png')"></div>
+          <p class="polaroid__caption">awal dari segalanya</p>
+        </div>
+
+        <div class="polaroid polaroid--r reveal" data-caption="senyum favorit aku">
+          <div class="polaroid__img" style="background-image: url('assets/smile.png')"></div>
+          <p class="polaroid__caption">senyum favorit aku</p>
+        </div>
+
+        <div class="polaroid polaroid--l reveal" data-caption="hari yang literally perfect">
+          <div class="polaroid__img" style="background-image: url('assets/perfectday.jpeg')"></div>
+          <p class="polaroid__caption">hari yang literally perfect</p>
+        </div>
+
+        <div class="polaroid reveal" data-caption="cuma kita berdua">
+          <div class="polaroid__img" style="background-image: url('assets/justus.png')"></div>
+          <p class="polaroid__caption">cuma kita berdua</p>
+        </div>
+
+        <div class="polaroid polaroid--r reveal" data-caption="ini rasanya kayak home">
+          <div class="polaroid__img" style="background-image: url('assets/home.png')"></div>
+          <p class="polaroid__caption">ini rasanya kayak home</p>
+        </div>
+
+        <div class="polaroid polaroid--l reveal" data-caption="malam biasa yang jadi memorable">
+          <div class="polaroid__img" style="background-image: url('assets/night.png')"></div>
+          <p class="polaroid__caption">malam biasa yang jadi memorable</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+      <button class="lightbox__close" id="lightbox-close" aria-label="Close">&times;</button>
+      <div class="lightbox__img" id="lightbox-img"></div>
+      <p class="lightbox__caption" id="lightbox-caption"></p>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 4: LETTER ============ -->
+  <section id="letter" class="page page--letter">
+    <div class="page__inner page__inner--narrow">
+      <div class="section-header reveal">
+        <p class="pre-title">Chapter Three</p>
+        <h2 class="section-title">Surat Untukmu</h2>
+      </div>
+
+      <div class="letter-wrap reveal">
+        <div class="letter">
+          <div class="letter__paper">
+            <!-- [CUSTOMIZE] Ganti tanggal -->
+            <p class="letter__date">Di Hari Ulang Tahunmu, Minggu 26 April 2026</p>
+
+            <!-- [CUSTOMIZE] Isi surat cinta di sini -->
+            <div class="letter__body">
+              <p class="letter__salutation">Sayang,</p>
+              <p>Jujur, aku udah nyoba nulis ini berkali kali. Started it, deleted it, stared at the screen for way too long. Because honestly how do you even put into words what someone means to you?</p>
+              <p>Kamu tuh literally udah mengubah cara aku ngeliat banyak hal. Bukan dengan cara yang dramatic atau cinematic tapi quietly, the way you notice small things. Cara kamu ketawa sebelum punchline nya. Cara kamu somehow bikin malam malam biasa jadi something worth remembering.</p>
+              <p>I love how genuinely passionate kamu sama hal hal yang kamu care about. I love that you're kind bukan karena harus, tapi emang karena itu who you are. And I love that kamu selalu jujur sama aku, even when it's not the easiest thing to say.</p>
+              <p>Nggak ada kata kata yang cukup untuk ngomong betapa berartinya kamu buat aku. So instead, aku bikin ini this little corner of the internet khusus buat kamu. Supaya kamu tau: I see you. I genuinely love you. Dan aku so glad you were born.</p>
+              <p>Happy birthday, love. Semoga tahun ini gives you everything you deserve which is dan di lancarin semua hal yang kamu mau, honestly, a lot.</p>
+            </div>
+
+            <div class="letter__signature">
+              <span class="letter__closing">Forever yours,</span>
+              <!-- [CUSTOMIZE] Ganti dengan namamu -->
+              <span class="letter__from">Pamungkas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 5: REASONS ============ -->
+  <section id="reasons" class="page page--reasons">
+    <div class="page__inner">
+      <div class="section-header reveal">
+        <p class="pre-title">Chapter Four</p>
+        <h2 class="section-title section-title--light">Why I Love You</h2>
+        <p class="section-desc section-desc--light">Hover atau tap tiap kartu untuk reveal dan harus urut ya dari 01.</p>
+      </div>
+
+      <!-- [CUSTOMIZE] Ganti teks di dalam reason-card__back dengan alasanmu sendiri -->
+
+      <div class="reasons-grid">
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">01</span><span class="reason-card__icon">☺️</span></div>
+            <div class="reason-card__back"><p>Tawamu yang asli, bukan yang polite polite.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">02</span><span class="reason-card__icon">💋</span></div>
+            <div class="reason-card__back"><p>How you genuinely care literally about everyone and everything.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">03</span><span class="reason-card__icon">☕</span></div>
+            <div class="reason-card__back"><p>The way kamu bikin tempat mana aja kerasa kayak home.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">04</span><span class="reason-card__icon">📖</span></div>
+            <div class="reason-card__back"><p>Ekspresimu waktu lagi completely lost in something you love. It's everything.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">05</span><span class="reason-card__icon">🌙</span></div>
+            <div class="reason-card__back"><p>Late night conversations kita yang somehow nggak pernah habis topiknya.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">06</span><span class="reason-card__icon">🥰</span></div>
+            <div class="reason-card__back"><p>Kejujuran kamu even when it's literally the harder thing to say, kayak soal pengen kurus itu pun really cute anyway.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">07</span><span class="reason-card__icon">🎵</span></div>
+            <div class="reason-card__back"><p>How you notice hal hal kecil yang orang lain usually just skip.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">08</span><span class="reason-card__icon">🌿</span></div>
+            <div class="reason-card__back"><p>Your calm yang somehow selalu nemuin aku waktu aku lagi overthinking boong si hehe.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">09</span><span class="reason-card__icon">⭐</span></div>
+            <div class="reason-card__back"><p>The passion yang kamu bawa ke everything you genuinely believe in.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">10</span><span class="reason-card__icon">🤍</span></div>
+            <div class="reason-card__back"><p>Cara kamu love orang-orang di hidupmu — fully, no conditions, no half-measures.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">11</span><span class="reason-card__icon">✨</span></div>
+            <div class="reason-card__back"><p>That you literally make me want to be a better person every single day.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">12</span><span class="reason-card__icon">🌹</span></div>
+            <div class="reason-card__back"><p>Simply kamu. Semua hal tentang kamu, exactly as you are.</p></div>
+          </div>
+        </div>
+
+        <div class="reason-card reason-card--love reveal">
+          <div class="reason-card__inner">
+            <div class="reason-card__front"><span class="reason-card__num">13</span><span class="reason-card__icon">🫀</span></div>
+            <div class="reason-card__back"><p>Surpress Ebebbb!!!</p></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 6: BIRTHDAY ============ -->
+  <section id="birthday" class="page page--birthday">
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+    <div class="page__inner page__inner--center">
+      <div class="birthday__content reveal">
+
+        <p class="pre-title">Final Chapter</p>
+
+        <!-- Cake -->
+        <div class="cake-wrap">
+          <div class="candles">
+            <div class="candle"><div class="flame"></div></div>
+            <div class="candle"><div class="flame"></div></div>
+            <div class="candle"><div class="flame"></div></div>
+          </div>
+          <div class="cake">
+            <div class="cake__top"></div>
+            <div class="cake__frosting"></div>
+            <div class="cake__body">
+              <div class="cake__deco">♥ ✦ ♥</div>
+            </div>
+            <div class="cake__plate"></div>
+          </div>
+        </div>
+
+        <!-- [CUSTOMIZE] Ganti dengan nama kekasihmu -->
+        <h2 class="birthday__title">Happy Birthday, Sayang</h2>
+
+        <p class="birthday__hint" id="birthday-hint">Tutup mata dulu. Make a wish...</p>
+
+        <button class="birthday__btn" id="blow-btn">
+          Tiup Lilinnya &nbsp;🕯️
+        </button>
+
+        <!-- [CUSTOMIZE] Pesan akhir untuknya -->
+        <div class="birthday__final" id="birthday-final">
+          <p class="birthday__stars">✦ &nbsp; ✦ &nbsp; ✦</p>
+          <p class="birthday__wish-sent">Permintaanmu udah dikirim ke bintang bintang.</p>
+          <p class="birthday__message">Another year around the sun and honestly, I'm just grateful you chose to share yours with me. Semoga tahun ini brings you everything you deserve laughter, peace, random adventures, and love. I'll be here for all of it, which is a promise.</p>
+          <p class="birthday__sign">
+            With all my love,<br>
+            <!-- [CUSTOMIZE] Namamu -->
+            <span class="birthday__from">Pamungkas <3</span>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- [CUSTOMIZE] Lagu untuk tombol hero (awal) -->
+  <audio id="hero-song" src="assets/Michael Bublé - Home.mp3" preload="auto" loop></audio>
+
+  <!-- [CUSTOMIZE] Lagu untuk tombol tiup lilin (birthday) -->
+  <audio id="birthday-song" src="assets/happy-birthday.mp3" preload="auto"></audio>
+
+  <!-- [CUSTOMIZE] Lagu untuk card 13 (surprise) -->
+  <audio id="love-card-song" src="assets/hidup-jokowi.mp3" preload="auto"></audio>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
