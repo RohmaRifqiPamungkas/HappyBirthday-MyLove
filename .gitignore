@@ -4,3 +4,5 @@ assets/*
 !assets/*.wav
 !assets/*.m4a
 !assets/*.ogg
+.vercel
+.env*.local
