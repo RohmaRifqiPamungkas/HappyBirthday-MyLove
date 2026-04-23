@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,13 @@
   <meta name="theme-color" content="#0d0810">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Dancing+Script:wght@600;700&family=Lato:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Dancing+Script:wght@600;700&family=Lato:ital,wght@0,300;0,400;1,300&display=swap"
+    rel="stylesheet">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
   <!-- ============ SIDE DOT NAVIGATION ============ -->
@@ -55,6 +59,14 @@
     </ul>
   </nav>
 
+  <div class="chapter-progress" id="chapter-progress" aria-live="polite">
+    <p class="chapter-progress__label" id="chapter-progress-label">Chapter 1 / 6</p>
+    <div class="chapter-progress__bar" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"
+      aria-label="Chapter progress">
+      <span class="chapter-progress__fill" id="chapter-progress-fill"></span>
+    </div>
+  </div>
+
   <!-- ============ PAGE 1: HERO ============ -->
   <section id="hero" class="page page--hero">
     <canvas id="petals-canvas" aria-hidden="true"></canvas>
@@ -72,8 +84,9 @@
       </p>
       <button class="hero__cta fade-up" data-delay="1050" onclick="scrollToSection('story')">
         Yukk Mulai dari Sini
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path d="M12 5v14M5 12l7 7 7-7"/>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+          aria-hidden="true">
+          <path d="M12 5v14M5 12l7 7 7-7" />
         </svg>
       </button>
     </div>
@@ -94,52 +107,67 @@
         <!-- [CUSTOMIZE] Ganti tanggal, judul, dan deskripsi tiap milestone -->
 
         <div class="timeline__item reveal" data-side="left">
-          <div class="timeline__marker"><div class="timeline__dot"></div></div>
+          <div class="timeline__marker">
+            <div class="timeline__dot"></div>
+          </div>
           <div class="timeline__card">
             <span class="timeline__icon">✦</span>
             <span class="timeline__date">The Beginning</span>
             <h3 class="timeline__title">Hari Itu</h3>
-            <p class="timeline__desc">It was literally just a normal day tapi somehow jadi hari yang paling berkesan. Ngl, waktu itu gue ini nggak nyangka bakal sejauh ini sama kamu.</p>
+            <p class="timeline__desc">It was literally just a normal day tapi somehow jadi hari yang paling berkesan.
+              Ngl, waktu itu gue ini nggak nyangka bakal sejauh ini sama kamu.</p>
           </div>
         </div>
 
         <div class="timeline__item reveal" data-side="right">
-          <div class="timeline__marker"><div class="timeline__dot"></div></div>
+          <div class="timeline__marker">
+            <div class="timeline__dot"></div>
+          </div>
           <div class="timeline__card">
             <span class="timeline__icon">☕</span>
             <span class="timeline__date">First Date</span>
             <h3 class="timeline__title">Dua Jam Jadi Enam</h3>
-            <p class="timeline__desc">We literally stayed disana sampe bosen and memutuskan untuk pindah. Nggak kerasa waktu berlalu which is honestly the best sign kalau vibes nya emang udah bener.</p>
+            <p class="timeline__desc">We literally stayed disana sampe bosen and memutuskan untuk pindah. Nggak kerasa
+              waktu berlalu which is honestly the best sign kalau vibes nya emang udah bener.</p>
           </div>
         </div>
 
         <div class="timeline__item reveal" data-side="left">
-          <div class="timeline__marker"><div class="timeline__dot"></div></div>
+          <div class="timeline__marker">
+            <div class="timeline__dot"></div>
+          </div>
           <div class="timeline__card">
             <span class="timeline__icon">♡</span>
             <span class="timeline__date">The Moment</span>
             <h3 class="timeline__title">I Just Knew</h3>
-            <p class="timeline__desc">It was just a quiet moment no big gesture, no dramatic scene. Tapi somehow I just knew. You were different, genuinely. Dan aku nggak mau overthink it lebih dari itu.</p>
+            <p class="timeline__desc">It was just a quiet moment no big gesture, no dramatic scene. Tapi somehow I just
+              knew. You were different, genuinely. Dan aku nggak mau overthink it lebih dari itu.</p>
           </div>
         </div>
 
         <div class="timeline__item reveal" data-side="right">
-          <div class="timeline__marker"><div class="timeline__dot"></div></div>
+          <div class="timeline__marker">
+            <div class="timeline__dot"></div>
+          </div>
           <div class="timeline__card">
             <span class="timeline__icon">✈</span>
             <span class="timeline__date">Our Adventure</span>
             <h3 class="timeline__title">Us Against the World</h3>
-            <p class="timeline__desc">Every trip, every random outing, every detour yang nggak planned always better with you. Lowkey, I wouldn't want it any other way.</p>
+            <p class="timeline__desc">Every trip, every random outing, every detour yang nggak planned always better
+              with you. Lowkey, I wouldn't want it any other way.</p>
           </div>
         </div>
 
         <div class="timeline__item reveal" data-side="left">
-          <div class="timeline__marker"><div class="timeline__dot timeline__dot--now"></div></div>
+          <div class="timeline__marker">
+            <div class="timeline__dot timeline__dot--now"></div>
+          </div>
           <div class="timeline__card timeline__card--highlight">
             <span class="timeline__icon">🎂</span>
             <span class="timeline__date">Today</span>
             <h3 class="timeline__title">Happy Birthday, Love</h3>
-            <p class="timeline__desc">Another year of you being in this world. Another year I get to be by your side which is, honestly, everything. Genuinely wouldn't trade it for anything.</p>
+            <p class="timeline__desc">Another year of you being in this world. Another year I get to be by your side
+              which is, honestly, everything. Genuinely wouldn't trade it for anything.</p>
           </div>
         </div>
 
@@ -216,13 +244,21 @@
             <p class="letter__date">Di Hari Ulang Tahunmu, Minggu 26 April 2026</p>
 
             <!-- [CUSTOMIZE] Isi surat cinta di sini -->
-            <div class="letter__body">
+            <div class="letter__body" id="letter-body" data-typing="true">
               <p class="letter__salutation">Sayang,</p>
-              <p>Jujur, aku udah nyoba nulis ini berkali kali. Started it, deleted it, stared at the screen for way too long. Because honestly how do you even put into words what someone means to you?</p>
-              <p>Kamu tuh literally udah mengubah cara aku ngeliat banyak hal. Bukan dengan cara yang dramatic atau cinematic tapi quietly, the way you notice small things. Cara kamu ketawa sebelum punchline nya. Cara kamu somehow bikin malam malam biasa jadi something worth remembering.</p>
-              <p>I love how genuinely passionate kamu sama hal hal yang kamu care about. I love that you're kind bukan karena harus, tapi emang karena itu who you are. And I love that kamu selalu jujur sama aku, even when it's not the easiest thing to say.</p>
-              <p>Nggak ada kata kata yang cukup untuk ngomong betapa berartinya kamu buat aku. So instead, aku bikin ini this little corner of the internet khusus buat kamu. Supaya kamu tau: I see you. I genuinely love you. Dan aku so glad you were born.</p>
-              <p>Happy birthday, love. Semoga tahun ini gives you everything you deserve which is dan di lancarin semua hal yang kamu mau, honestly, a lot.</p>
+              <p>Jujur, aku udah nyoba nulis ini berkali kali. Started it, deleted it, stared at the screen for way too
+                long. Because honestly how do you even put into words what someone means to you?</p>
+              <p>Kamu tuh literally udah mengubah cara aku ngeliat banyak hal. Bukan dengan cara yang dramatic atau
+                cinematic tapi quietly, the way you notice small things. Cara kamu ketawa sebelum punchline nya. Cara
+                kamu somehow bikin malam malam biasa jadi something worth remembering.</p>
+              <p>I love how genuinely passionate kamu sama hal hal yang kamu care about. I love that you're kind bukan
+                karena harus, tapi emang karena itu who you are. And I love that kamu selalu jujur sama aku, even when
+                it's not the easiest thing to say.</p>
+              <p>Nggak ada kata kata yang cukup untuk ngomong betapa berartinya kamu buat aku. So instead, aku bikin ini
+                this little corner of the internet khusus buat kamu. Supaya kamu tau: I see you. I genuinely love you.
+                Dan aku so glad you were born.</p>
+              <p>Happy birthday, love. Semoga tahun ini gives you everything you deserve which is dan di lancarin semua
+                hal yang kamu mau, honestly, a lot.</p>
             </div>
 
             <div class="letter__signature">
@@ -242,7 +278,8 @@
       <div class="section-header reveal">
         <p class="pre-title">Chapter Four</p>
         <h2 class="section-title section-title--light">Why I Love You</h2>
-        <p class="section-desc section-desc--light">Hover atau tap tiap kartu untuk reveal dan harus urut ya dari 01.</p>
+        <p class="section-desc section-desc--light">Hover atau tap tiap kartu untuk reveal dan harus urut ya dari 01.
+        </p>
       </div>
 
       <!-- [CUSTOMIZE] Ganti teks di dalam reason-card__back dengan alasanmu sendiri -->
@@ -251,92 +288,132 @@
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">01</span><span class="reason-card__icon">☺️</span></div>
-            <div class="reason-card__back"><p>Tawamu yang asli, bukan yang polite polite.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">01</span><span
+                class="reason-card__icon">☺️</span></div>
+            <div class="reason-card__back">
+              <p>Tawamu yang asli, bukan yang polite polite.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">02</span><span class="reason-card__icon">💋</span></div>
-            <div class="reason-card__back"><p>How you genuinely care literally about everyone and everything.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">02</span><span
+                class="reason-card__icon">💋</span></div>
+            <div class="reason-card__back">
+              <p>How you genuinely care literally about everyone and everything.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">03</span><span class="reason-card__icon">☕</span></div>
-            <div class="reason-card__back"><p>The way kamu bikin tempat mana aja kerasa kayak home.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">03</span><span
+                class="reason-card__icon">☕</span></div>
+            <div class="reason-card__back">
+              <p>The way kamu bikin tempat mana aja kerasa kayak home.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">04</span><span class="reason-card__icon">📖</span></div>
-            <div class="reason-card__back"><p>Ekspresimu waktu lagi completely lost in something you love. It's everything.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">04</span><span
+                class="reason-card__icon">📖</span></div>
+            <div class="reason-card__back">
+              <p>Ekspresimu waktu lagi completely lost in something you love. It's everything.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">05</span><span class="reason-card__icon">🌙</span></div>
-            <div class="reason-card__back"><p>Late night conversations kita yang somehow nggak pernah habis topiknya.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">05</span><span
+                class="reason-card__icon">🌙</span></div>
+            <div class="reason-card__back">
+              <p>Late night conversations kita yang somehow nggak pernah habis topiknya.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">06</span><span class="reason-card__icon">🥰</span></div>
-            <div class="reason-card__back"><p>Kejujuran kamu even when it's literally the harder thing to say, kayak soal pengen kurus itu pun really cute anyway.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">06</span><span
+                class="reason-card__icon">🥰</span></div>
+            <div class="reason-card__back">
+              <p>Kejujuran kamu even when it's literally the harder thing to say, kayak soal pengen kurus itu pun really
+                cute anyway.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">07</span><span class="reason-card__icon">🎵</span></div>
-            <div class="reason-card__back"><p>How you notice hal hal kecil yang orang lain usually just skip.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">07</span><span
+                class="reason-card__icon">🎵</span></div>
+            <div class="reason-card__back">
+              <p>How you notice hal hal kecil yang orang lain usually just skip.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">08</span><span class="reason-card__icon">🌿</span></div>
-            <div class="reason-card__back"><p>Your calm yang somehow selalu nemuin aku waktu aku lagi overthinking boong si hehe.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">08</span><span
+                class="reason-card__icon">🌿</span></div>
+            <div class="reason-card__back">
+              <p>Your calm yang somehow selalu nemuin aku waktu aku lagi overthinking boong si hehe.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">09</span><span class="reason-card__icon">⭐</span></div>
-            <div class="reason-card__back"><p>The passion yang kamu bawa ke everything you genuinely believe in.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">09</span><span
+                class="reason-card__icon">⭐</span></div>
+            <div class="reason-card__back">
+              <p>The passion yang kamu bawa ke everything you genuinely believe in.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">10</span><span class="reason-card__icon">🤍</span></div>
-            <div class="reason-card__back"><p>Cara kamu love orang-orang di hidupmu — fully, no conditions, no half-measures.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">10</span><span
+                class="reason-card__icon">🤍</span></div>
+            <div class="reason-card__back">
+              <p>Cara kamu love orang-orang di hidupmu — fully, no conditions, no half-measures.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">11</span><span class="reason-card__icon">✨</span></div>
-            <div class="reason-card__back"><p>That you literally make me want to be a better person every single day.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">11</span><span
+                class="reason-card__icon">✨</span></div>
+            <div class="reason-card__back">
+              <p>That you literally make me want to be a better person every single day.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">12</span><span class="reason-card__icon">🌹</span></div>
-            <div class="reason-card__back"><p>Simply kamu. Semua hal tentang kamu, exactly as you are.</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">12</span><span
+                class="reason-card__icon">🌹</span></div>
+            <div class="reason-card__back">
+              <p>Simply kamu. Semua hal tentang kamu, exactly as you are.</p>
+            </div>
           </div>
         </div>
 
         <div class="reason-card reason-card--love reveal">
           <div class="reason-card__inner">
-            <div class="reason-card__front"><span class="reason-card__num">13</span><span class="reason-card__icon">🫀</span></div>
-            <div class="reason-card__back"><p>Surpress Ebebbb!!! Pencet Babe</p></div>
+            <div class="reason-card__front"><span class="reason-card__num">13</span><span
+                class="reason-card__icon">🫀</span></div>
+            <div class="reason-card__back">
+              <p>Surpress Ebebbb!!! Pencet Babe</p>
+            </div>
           </div>
         </div>
 
@@ -355,9 +432,15 @@
         <!-- Cake -->
         <div class="cake-wrap">
           <div class="candles">
-            <div class="candle"><div class="flame"></div></div>
-            <div class="candle"><div class="flame"></div></div>
-            <div class="candle"><div class="flame"></div></div>
+            <div class="candle">
+              <div class="flame"></div>
+            </div>
+            <div class="candle">
+              <div class="flame"></div>
+            </div>
+            <div class="candle">
+              <div class="flame"></div>
+            </div>
           </div>
           <div class="cake">
             <div class="cake__top"></div>
@@ -382,11 +465,13 @@
         <div class="birthday__final" id="birthday-final">
           <p class="birthday__stars">✦ &nbsp; ✦ &nbsp; ✦</p>
           <p class="birthday__wish-sent">Permintaanmu udah dikirim ke bintang bintang.</p>
-          <p class="birthday__message">Another year around the sun and honestly, I'm just grateful you chose to share yours with me. Semoga tahun ini brings you everything you deserve laughter, peace, random adventures, and love. I'll be here for all of it, which is a promise.</p>
+          <p class="birthday__message">Another year around the sun and honestly, I'm just grateful you chose to share
+            yours with me. Semoga tahun ini brings you everything you deserve laughter, peace, random adventures, and
+            love. I'll be here for all of it, which is a promise.</p>
           <p class="birthday__sign">
             With all my love,<br>
             <!-- [CUSTOMIZE] Namamu -->
-            <span class="birthday__from">Pamungkas <3</span>
+            <span class="birthday__from">Pamungkas <3< /span>
           </p>
         </div>
 
@@ -395,14 +480,23 @@
   </section>
 
   <!-- [CUSTOMIZE] Lagu untuk tombol hero (awal) -->
-  <audio id="hero-song" src="assets/Michael Bublé - Home.mp3" preload="auto" loop></audio>
+  <audio id="hero-song" data-track-name="Home" src="assets/Michael Bublé - Home.mp3" preload="auto" loop></audio>
 
   <!-- [CUSTOMIZE] Lagu untuk tombol tiup lilin (birthday) -->
-  <audio id="birthday-song" src="assets/happy-birthday.mp3" preload="auto"></audio>
+  <audio id="birthday-song" data-track-name="Happy Birthday" src="assets/happy-birthday.mp3" preload="auto"></audio>
 
   <!-- [CUSTOMIZE] Lagu untuk card 13 (surprise) -->
-  <audio id="love-card-song" src="assets/hidup-jokowi.mp3" preload="auto"></audio>
+  <audio id="love-card-song" data-track-name="Surprise Track" src="assets/hidup-jokowi.mp3" preload="auto"></audio>
+
+  <div class="audio-player" id="audio-player" aria-live="polite">
+    <p class="audio-player__label">Now playing</p>
+    <p class="audio-player__track" id="audio-player-track">No song yet</p>
+    <button class="audio-player__btn" id="audio-player-btn" type="button" aria-pressed="false">
+      Play Music
+    </button>
+  </div>
 
   <script src="js/app.js"></script>
 </body>
+
 </html>

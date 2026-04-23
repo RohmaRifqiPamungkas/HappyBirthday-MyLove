@@ -30,6 +30,164 @@ function initHero() {
   }
 }
 
+function initAudioPlayer() {
+  const playerBtn = qs('#audio-player-btn');
+  const trackLabel = qs('#audio-player-track');
+  if (!playerBtn || !trackLabel) return;
+
+  const songs = qsa('audio');
+  let activeSong = null;
+
+  function syncPlayerUI() {
+    const hasActiveSong = activeSong && !activeSong.paused;
+    playerBtn.textContent = hasActiveSong ? 'Pause Music' : 'Play Music';
+    playerBtn.setAttribute('aria-pressed', String(Boolean(hasActiveSong)));
+    if (hasActiveSong) {
+      trackLabel.textContent = activeSong.dataset.trackName || activeSong.id;
+    } else {
+      trackLabel.textContent = 'No song yet';
+    }
+  }
+
+  songs.forEach(song => {
+    song.addEventListener('play', () => {
+      songs.forEach(otherSong => {
+        if (otherSong !== song && !otherSong.paused) otherSong.pause();
+      });
+      activeSong = song;
+      syncPlayerUI();
+    });
+
+    song.addEventListener('pause', () => {
+      if (activeSong === song) {
+        const stillPlaying = Array.from(songs).find(otherSong => !otherSong.paused);
+        activeSong = stillPlaying || null;
+      }
+      syncPlayerUI();
+    });
+
+    song.addEventListener('ended', syncPlayerUI);
+  });
+
+  playerBtn.addEventListener('click', () => {
+    if (activeSong && !activeSong.paused) {
+      activeSong.pause();
+      return;
+    }
+
+    const fallbackSong = activeSong || qs('#hero-song') || songs[0];
+    if (fallbackSong) {
+      fallbackSong.play().catch(() => { });
+    }
+  });
+
+  syncPlayerUI();
+}
+
+function initChapterProgress() {
+  const progressWrap = qs('#chapter-progress');
+  const progressLabel = qs('#chapter-progress-label');
+  const progressFill = qs('#chapter-progress-fill');
+  const progressBar = progressWrap ? progressWrap.querySelector('.chapter-progress__bar') : null;
+  const sections = qsa('.page[id]');
+
+  if (!progressWrap || !progressLabel || !progressFill || !progressBar || !sections.length) return;
+
+  const total = sections.length;
+
+  function setProgress(index) {
+    const current = index + 1;
+    progressLabel.textContent = `Chapter ${current} / ${total}`;
+    progressFill.style.width = `${(current / total) * 100}%`;
+    progressBar.setAttribute('aria-valuenow', String(current));
+  }
+
+  setProgress(0);
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const index = Array.from(sections).findIndex(section => section.id === entry.target.id);
+      if (index >= 0) setProgress(index);
+    });
+  }, { threshold: 0.55 });
+
+  sections.forEach(section => io.observe(section));
+}
+
+function initLetterTyping() {
+  const letterBody = qs('#letter-body');
+  if (!letterBody || letterBody.dataset.typing !== 'true') return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const paragraphs = Array.from(letterBody.querySelectorAll('p'));
+  if (!paragraphs.length) return;
+
+  const originalTexts = paragraphs.map(paragraph => paragraph.textContent || '');
+  let hasTyped = false;
+
+  function showStaticText() {
+    paragraphs.forEach((paragraph, index) => {
+      paragraph.textContent = originalTexts[index];
+    });
+    letterBody.classList.remove('is-typing');
+    letterBody.classList.add('is-ready');
+  }
+
+  function typeParagraph(index) {
+    if (index >= paragraphs.length) {
+      letterBody.classList.remove('is-typing');
+      letterBody.classList.add('is-ready');
+      return;
+    }
+
+    const paragraph = paragraphs[index];
+    const fullText = originalTexts[index];
+    let pointer = 0;
+
+    paragraph.textContent = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'letter__typing-cursor';
+    cursor.textContent = '|';
+    paragraph.appendChild(cursor);
+
+    function tick() {
+      pointer += 1;
+      const nextText = fullText.slice(0, pointer);
+      paragraph.textContent = nextText;
+      paragraph.appendChild(cursor);
+
+      if (pointer >= fullText.length) {
+        cursor.remove();
+        setTimeout(() => typeParagraph(index + 1), 220);
+        return;
+      }
+
+      const delay = fullText[pointer - 1] === ' ' ? 12 : 20;
+      setTimeout(tick, delay);
+    }
+
+    tick();
+  }
+
+  if (reducedMotion) {
+    showStaticText();
+    return;
+  }
+
+  letterBody.classList.add('is-typing');
+
+  const section = qs('#letter') || letterBody;
+  const io = new IntersectionObserver(entries => {
+    if (hasTyped || !entries[0].isIntersecting) return;
+    hasTyped = true;
+    typeParagraph(0);
+    io.disconnect();
+  }, { threshold: 0.35 });
+
+  io.observe(section);
+}
+
 // ─── Floating hearts on canvas ───────────────────────────────
 function initPetals() {
   const canvas = qs('#petals-canvas');
@@ -220,7 +378,7 @@ function initReasonCards() {
         if (s) { s.pause(); s.currentTime = 0; }
       });
       const loveSong = qs('#love-card-song');
-      if (loveSong) loveSong.play().catch(() => {});
+      if (loveSong) loveSong.play().catch(() => { });
     });
   }
 }
@@ -232,7 +390,7 @@ function spawnLoveScreen() {
     el.className = 'love-heart';
     el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
     el.style.left = (Math.random() * 90) + 'vw';
-    el.style.top  = (Math.random() * 80) + 'vh';
+    el.style.top = (Math.random() * 80) + 'vh';
     el.style.animationDelay = (Math.random() * 0.4) + 's';
     document.body.appendChild(el);
     el.addEventListener('animationend', () => el.remove());
@@ -340,10 +498,13 @@ function launchConfetti() {
 // ─── Boot ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   initHero();
+  initAudioPlayer();
+  initChapterProgress();
   initPetals();
   initReveal();
   initDotNav();
   initGallery();
+  initLetterTyping();
   initReasonCards();
   initBirthday();
 });
