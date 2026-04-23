@@ -38,6 +38,12 @@
           <span class="dot-nav__dot"></span>
         </button>
       </li>
+      <li class="dot-nav__item" data-target="photobooth">
+        <button class="dot-nav__btn" aria-label="Photo Booth">
+          <span class="dot-nav__label">Photo Booth</span>
+          <span class="dot-nav__dot"></span>
+        </button>
+      </li>
       <li class="dot-nav__item" data-target="letter">
         <button class="dot-nav__btn" aria-label="Letter">
           <span class="dot-nav__label">Letter</span>
@@ -229,11 +235,92 @@
     </div>
   </section>
 
+  <!-- ============ PAGE 3.5: PHOTO BOOTH ============ -->
+  <section id="photobooth" class="page page--photobooth">
+    <div class="page__inner">
+      <div class="section-header reveal">
+        <p class="pre-title">Chapter Three</p>
+        <h2 class="section-title section-title--light">Foto Bareng</h2>
+        <p class="section-desc section-desc--light">Let’s capture today’s moment and turn it into another core memory
+          for us bareng bareng ✨</p>
+      </div>
+
+      <div class="photobooth reveal">
+        <div class="photobooth__layout">
+
+          <div class="photobooth__left">
+            <div class="photobooth__camera-wrap" id="pb-camera-wrap">
+              <div class="photobooth__idle" id="pb-idle">
+                <span class="photobooth__idle-icon">📷</span>
+                <span class="photobooth__idle-text">Klik tombol di bawah untuk buka kamera</span>
+              </div>
+              <video id="pb-video" autoplay playsinline muted></video>
+              <div class="photobooth__countdown" id="pb-countdown"></div>
+              <div class="photobooth__shot-indicator" id="pb-shot-indicator">
+                <span class="pb-shot-dot"></span>
+                <span class="pb-shot-dot"></span>
+                <span class="pb-shot-dot"></span>
+              </div>
+            </div>
+
+            <div class="photobooth__thumbs" id="pb-thumbs"></div>
+
+            <div class="pb-filter-picker" id="pb-filter-picker">
+              <p class="pb-filter-picker__label">Pilih Filter</p>
+              <div class="pb-filter-picker__options">
+                <button class="pb-filter-opt active" data-filter="none" aria-label="No Filter">Normal</button>
+                <button class="pb-filter-opt" data-filter="warm" aria-label="Warm Filter">Warm</button>
+                <button class="pb-filter-opt" data-filter="bw" aria-label="Black and White Filter">B&W</button>
+                <button class="pb-filter-opt" data-filter="vintage" aria-label="Vintage Filter">Vintage</button>
+                <button class="pb-filter-opt" data-filter="dreamy" aria-label="Dreamy Filter">Dreamy</button>
+                <button class="pb-filter-opt" data-filter="love" aria-label="Love Filter">Love</button>
+              </div>
+            </div>
+
+            <div class="pb-frame-picker" id="pb-frame-picker">
+              <p class="pb-frame-picker__label">Pilih Frame</p>
+              <div class="pb-frame-picker__options">
+                <button class="pb-frame-opt active" data-frame="romance" aria-label="Dark Romance">
+                  <span class="pb-frame-opt__swatch" style="background:linear-gradient(135deg,#1a0e14,#100810)"></span>
+                  <span class="pb-frame-opt__name">Dark Red</span>
+                </button>
+                <button class="pb-frame-opt" data-frame="film" aria-label="Film Strip">
+                  <span class="pb-frame-opt__swatch" style="background:linear-gradient(135deg,#0a0a0a,#1c1c1c)"></span>
+                  <span class="pb-frame-opt__name">Film Strip</span>
+                </button>
+                <button class="pb-frame-opt" data-frame="pastel" aria-label="Pastel Pink">
+                  <span class="pb-frame-opt__swatch" style="background:linear-gradient(135deg,#fce8ef,#fdf0f4)"></span>
+                  <span class="pb-frame-opt__name">Pastel</span>
+                </button>
+                <button class="pb-frame-opt" data-frame="vintage" aria-label="Vintage Film">
+                  <span class="pb-frame-opt__swatch" style="background:linear-gradient(135deg,#f2ead8,#ede5cc)"></span>
+                  <span class="pb-frame-opt__name">Vintage</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="photobooth__controls">
+              <button class="pb-btn pb-btn--start" id="pb-start-btn">📷 Buka Kamera</button>
+              <button class="pb-btn pb-btn--secondary pb-btn--hidden" id="pb-retake-btn">↩ Foto Lagi</button>
+              <button class="pb-btn pb-btn--download pb-btn--hidden" id="pb-download-btn">↓ Simpan Strip</button>
+            </div>
+          </div>
+
+          <div class="photobooth__strip pb-strip--hidden" id="pb-strip">
+            <p class="pb-strip__label">Photo Strip</p>
+            <canvas id="pb-canvas"></canvas>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ PAGE 4: LETTER ============ -->
   <section id="letter" class="page page--letter">
     <div class="page__inner page__inner--narrow">
       <div class="section-header reveal">
-        <p class="pre-title">Chapter Three</p>
+        <p class="pre-title">Chapter Four</p>
         <h2 class="section-title">Surat Untukmu</h2>
       </div>
 
@@ -276,7 +363,7 @@
   <section id="reasons" class="page page--reasons">
     <div class="page__inner">
       <div class="section-header reveal">
-        <p class="pre-title">Chapter Four</p>
+        <p class="pre-title">Chapter Five</p>
         <h2 class="section-title section-title--light">Why I Love You</h2>
         <p class="section-desc section-desc--light">Hover atau tap tiap kartu untuk reveal dan harus urut ya dari 01.
         </p>
@@ -471,7 +558,7 @@
           <p class="birthday__sign">
             With all my love,<br>
             <!-- [CUSTOMIZE] Namamu -->
-            <span class="birthday__from">Pamungkas <3< /span>
+            <span class="birthday__from">Pamungkas❤️</span>
           </p>
         </div>
 
@@ -480,17 +567,25 @@
   </section>
 
   <!-- [CUSTOMIZE] Lagu untuk tombol hero (awal) -->
-  <audio id="hero-song" data-track-name="Home" src="assets/Michael Bublé - Home.mp3" preload="auto" loop></audio>
+  <audio id="hero-song" data-track-name="Michael Bublé - Home" src="assets/Michael Bublé - Home.mp3" preload="auto"
+    loop></audio>
 
   <!-- [CUSTOMIZE] Lagu untuk tombol tiup lilin (birthday) -->
   <audio id="birthday-song" data-track-name="Happy Birthday" src="assets/happy-birthday.mp3" preload="auto"></audio>
 
   <!-- [CUSTOMIZE] Lagu untuk card 13 (surprise) -->
-  <audio id="love-card-song" data-track-name="Surprise Track" src="assets/hidup-jokowi.mp3" preload="auto"></audio>
+  <audio id="love-card-song" data-track-name="Surprise Hidup Jokowi" src="assets/hidup-jokowi.mp3"
+    preload="auto"></audio>
 
   <div class="audio-player" id="audio-player" aria-live="polite">
-    <p class="audio-player__label">Now playing</p>
-    <p class="audio-player__track" id="audio-player-track">No song yet</p>
+    <div class="audio-player__top">
+      <div class="audio-player__vinyl" id="audio-player-vinyl" aria-hidden="true"></div>
+      <div class="audio-player__meta">
+        <p class="audio-player__label">Now playing</p>
+        <p class="audio-player__track" id="audio-player-track">No song yet</p>
+        <p class="audio-player__time" id="audio-player-time">00:00 / 00:00</p>
+      </div>
+    </div>
     <button class="audio-player__btn" id="audio-player-btn" type="button" aria-pressed="false">
       Play Music
     </button>
