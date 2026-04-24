@@ -33,9 +33,13 @@ function initHero() {
 function initAudioPlayer() {
   const player = qs('#audio-player');
   const playerBtn = qs('#audio-player-btn');
+  const playerToggleBtn = qs('#audio-player-toggle');
+  const playerToggleIcon = qs('#audio-player-toggle-icon');
   const trackLabel = qs('#audio-player-track');
   const timeLabel = qs('#audio-player-time');
   if (!player || !playerBtn || !trackLabel) return;
+
+  const playerHiddenStorageKey = 'birthday-audio-player-collapsed';
 
   const songs = Array.from(qsa('audio'));
   const defaultSong = qs('#hero-song') || songs[0] || null;
@@ -62,6 +66,25 @@ function initAudioPlayer() {
   function getCurrentSong() {
     return activeSong || selectedSong || defaultSong;
   }
+
+  function setPlayerCollapsed(isCollapsed) {
+    player.classList.toggle('audio-player--collapsed', isCollapsed);
+    if (!playerToggleBtn) return;
+
+    playerToggleBtn.setAttribute('aria-expanded', String(!isCollapsed));
+    playerToggleBtn.setAttribute('aria-label', isCollapsed ? 'Tampilkan pemutar musik' : 'Sembunyikan pemutar musik');
+    if (playerToggleIcon) {
+      playerToggleIcon.textContent = isCollapsed ? '▼' : '▲';
+    }
+  }
+
+  let isPlayerCollapsed = false;
+  try {
+    isPlayerCollapsed = window.localStorage.getItem(playerHiddenStorageKey) === 'true';
+  } catch {
+    isPlayerCollapsed = false;
+  }
+  setPlayerCollapsed(isPlayerCollapsed);
 
   function syncPlayerUI() {
     const hasActiveSong = activeSong && !activeSong.paused;
@@ -121,6 +144,17 @@ function initAudioPlayer() {
       nextSong.play().catch(() => { });
     }
   });
+
+  if (playerToggleBtn) {
+    playerToggleBtn.addEventListener('click', () => {
+      isPlayerCollapsed = !isPlayerCollapsed;
+      setPlayerCollapsed(isPlayerCollapsed);
+      try {
+        window.localStorage.setItem(playerHiddenStorageKey, String(isPlayerCollapsed));
+      } catch {
+      }
+    });
+  }
 
   syncPlayerUI();
 }

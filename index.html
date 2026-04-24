@@ -578,17 +578,27 @@
     preload="auto"></audio>
 
   <div class="audio-player" id="audio-player" aria-live="polite">
-    <div class="audio-player__top">
-      <div class="audio-player__vinyl" id="audio-player-vinyl" aria-hidden="true"></div>
-      <div class="audio-player__meta">
-        <p class="audio-player__label">Now playing</p>
-        <p class="audio-player__track" id="audio-player-track">No song yet</p>
-        <p class="audio-player__time" id="audio-player-time">00:00 / 00:00</p>
-      </div>
+    <div class="audio-player__bar">
+      <p class="audio-player__bar-label">Music</p>
+      <button class="audio-player__collapse" id="audio-player-toggle" type="button" aria-controls="audio-player"
+        aria-expanded="true" aria-label="Sembunyikan pemutar musik">
+        <span class="audio-player__collapse-icon" id="audio-player-toggle-icon" aria-hidden="true">▲</span>
+      </button>
     </div>
-    <button class="audio-player__btn" id="audio-player-btn" type="button" aria-pressed="false">
-      Play Music
-    </button>
+
+    <div class="audio-player__content" id="audio-player-content">
+      <div class="audio-player__top">
+        <div class="audio-player__vinyl" id="audio-player-vinyl" aria-hidden="true"></div>
+        <div class="audio-player__meta">
+          <p class="audio-player__label">Now playing</p>
+          <p class="audio-player__track" id="audio-player-track">No song yet</p>
+          <p class="audio-player__time" id="audio-player-time">00:00 / 00:00</p>
+        </div>
+      </div>
+      <button class="audio-player__btn" id="audio-player-btn" type="button" aria-pressed="false">
+        Play Music
+      </button>
+    </div>
   </div>
 
   <script src="js/app.js"></script>
