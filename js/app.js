@@ -773,6 +773,7 @@ function initPhotoBooth() {
   const ORIENTATION_LANDSCAPE = 'landscape';
   const ORIENTATION_PORTRAIT = 'portrait';
   let stream = null;
+  let streamRotationDeg = 0;
   let capturing = false;
   const frames = [];
   let selectedFrame = 'romance';
@@ -813,11 +814,25 @@ function initPhotoBooth() {
     if (sourceOrientation === targetOrientation) return 0;
 
     const angle = getScreenAngle();
-    if (targetOrientation === ORIENTATION_PORTRAIT) {
-      return Math.abs(angle) === 180 ? 90 : -90;
+    const normalized = ((angle % 360) + 360) % 360;
+
+    if (targetOrientation === ORIENTATION_PORTRAIT && sourceOrientation === ORIENTATION_LANDSCAPE) {
+      if (normalized === 180) return 90;
+      return -90;
     }
 
-    return angle === -90 || angle === 270 ? -90 : 90;
+    if (targetOrientation === ORIENTATION_LANDSCAPE && sourceOrientation === ORIENTATION_PORTRAIT) {
+      if (normalized === 90 || normalized === 270) return 0;
+      return 90;
+    }
+
+    return 0;
+  }
+
+  function resolveStreamRotation() {
+    const source = getCaptureSourceSize();
+    const viewportOrientation = getViewportOrientation();
+    streamRotationDeg = getRotationDegreesForCapture(source.orientation, viewportOrientation);
   }
 
   function drawContainedSelfie(ctx, img, x, y, width, height, bgColor = 'rgba(10, 6, 8, 0.92)') {
@@ -1192,8 +1207,7 @@ function initPhotoBooth() {
 
   function captureOrientedFrame() {
     const source = getCaptureSourceSize();
-    const targetOrientation = getViewportOrientation();
-    const rotateDeg = getRotationDegreesForCapture(source.orientation, targetOrientation);
+    const rotateDeg = streamRotationDeg;
 
     const fc = document.createElement('canvas');
     const fctx = fc.getContext('2d');
@@ -1244,6 +1258,7 @@ function initPhotoBooth() {
         });
       }
       syncCameraWrapRatio();
+      resolveStreamRotation();
       window.addEventListener('resize', syncCameraWrapRatio);
       window.addEventListener('orientationchange', syncCameraWrapRatio);
 
@@ -1372,6 +1387,7 @@ function initPhotoBooth() {
       if (!entries[0].isIntersecting && stream) {
         stream.getTracks().forEach(t => t.stop());
         stream = null;
+        streamRotationDeg = 0;
         video.srcObject = null;
         video.classList.remove('pb-active');
         window.removeEventListener('resize', syncCameraWrapRatio);
