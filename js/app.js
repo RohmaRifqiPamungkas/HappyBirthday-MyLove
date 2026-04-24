@@ -768,14 +768,34 @@ function initPhotoBooth() {
 
   const SHOTS = 3;
   const COUNT_FROM = 3;
-  const CAPTURE_ASPECT = 16 / 9;
-  const CAPTURE_WIDTH = 1280;
-  const CAPTURE_HEIGHT = Math.round(CAPTURE_WIDTH / CAPTURE_ASPECT);
+  const CAMERA_IDEAL_WIDTH = 1280;
+  const CAMERA_IDEAL_HEIGHT = 960;
   let stream = null;
   let capturing = false;
   const frames = [];
   let selectedFrame = 'romance';
   let selectedFilter = 'none';
+
+  function drawContainedSelfie(ctx, img, x, y, width, height, bgColor = 'rgba(10, 6, 8, 0.92)') {
+    const sourceWidth = img.width || img.videoWidth || width;
+    const sourceHeight = img.height || img.videoHeight || height;
+    if (!sourceWidth || !sourceHeight) return;
+
+    const scale = Math.min(width / sourceWidth, height / sourceHeight);
+    const drawWidth = sourceWidth * scale;
+    const drawHeight = sourceHeight * scale;
+    const drawX = x + (width - drawWidth) * 0.5;
+    const drawY = y + (height - drawHeight) * 0.5;
+
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(x, y, width, height);
+
+    ctx.save();
+    ctx.translate(drawX + drawWidth, drawY);
+    ctx.scale(-1, 1);
+    ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
+    ctx.restore();
+  }
 
   const FRAMES = {
 
@@ -807,7 +827,7 @@ function initPhotoBooth() {
         ctx.strokeStyle = dg; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(PAD, 106); ctx.lineTo(W - PAD, 106); ctx.stroke();
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
-        ctx.save(); ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
+        drawContainedSelfie(ctx, img, PAD, y, PW, PH, 'rgba(12, 8, 12, 0.95)');
         ctx.strokeStyle = 'rgba(196,117,138,0.16)'; ctx.lineWidth = 0.75; ctx.strokeRect(PAD, y, PW, PH);
         ctx.fillStyle = 'rgba(245,234,232,0.4)'; ctx.font = '400 8px "Lato",Arial,sans-serif';
         ctx.textAlign = 'left'; ctx.fillText(`0${i + 1}`, PAD + 6, y + 14);
@@ -862,7 +882,7 @@ function initPhotoBooth() {
         ctx.beginPath(); ctx.moveTo(PAD, 100); ctx.lineTo(W - PAD, 100); ctx.stroke();
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
-        ctx.save(); ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
+        drawContainedSelfie(ctx, img, PAD, y, PW, PH, '#0a0a0a');
         // Vignette
         const vg = ctx.createRadialGradient(PAD + PW / 2, y + PH / 2, PH * 0.28, PAD + PW / 2, y + PH / 2, PH * 0.72);
         vg.addColorStop(0, 'transparent'); vg.addColorStop(1, 'rgba(0,0,0,0.42)');
@@ -933,10 +953,19 @@ function initPhotoBooth() {
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
         const r = 9;
+        const sourceWidth = img.width || img.videoWidth || PW;
+        const sourceHeight = img.height || img.videoHeight || PH;
+        const scale = Math.min(PW / sourceWidth, PH / sourceHeight);
+        const drawWidth = sourceWidth * scale;
+        const drawHeight = sourceHeight * scale;
+        const drawX = PAD + (PW - drawWidth) * 0.5;
+        const drawY = y + (PH - drawHeight) * 0.5;
         // Rounded clip
         ctx.save();
         this._roundedPhoto(ctx, PAD, y, PW, PH, r, () => ctx.clip());
-        ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
+        ctx.fillStyle = 'rgba(255, 236, 242, 0.95)';
+        ctx.fillRect(PAD, y, PW, PH);
+        ctx.translate(drawX + drawWidth, drawY); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, drawWidth, drawHeight); ctx.restore();
         // Pink tint
         this._roundedPhoto(ctx, PAD, y, PW, PH, r, () => { ctx.fillStyle = 'rgba(255,200,215,0.07)'; ctx.fill(); });
         // Rounded border
@@ -997,7 +1026,7 @@ function initPhotoBooth() {
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
         // Cream polaroid mat
         ctx.fillStyle = 'rgba(252,248,235,0.92)'; ctx.fillRect(PAD - 5, y - 5, PW + 10, PH + 10);
-        ctx.save(); ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
+        drawContainedSelfie(ctx, img, PAD, y, PW, PH, 'rgba(242, 232, 209, 0.9)');
         // Sepia overlay
         ctx.fillStyle = 'rgba(150,100,45,0.2)'; ctx.fillRect(PAD, y, PW, PH);
         ctx.strokeStyle = 'rgba(90,58,28,0.22)'; ctx.lineWidth = 1; ctx.strokeRect(PAD, y, PW, PH);
@@ -1063,26 +1092,26 @@ function initPhotoBooth() {
 
   function pbWait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-  function drawMediaCover(ctx, source, sourceWidth, sourceHeight, targetWidth, targetHeight) {
-    if (!sourceWidth || !sourceHeight || !targetWidth || !targetHeight) return;
+  async function getCameraStream() {
+    const primaryConstraints = {
+      video: {
+        facingMode: { ideal: 'user' },
+        width: { ideal: CAMERA_IDEAL_WIDTH },
+        height: { ideal: CAMERA_IDEAL_HEIGHT },
+        aspectRatio: { ideal: 4 / 3 },
+        resizeMode: 'none'
+      },
+      audio: false,
+    };
 
-    const sourceRatio = sourceWidth / sourceHeight;
-    const targetRatio = targetWidth / targetHeight;
-
-    let cropWidth = sourceWidth;
-    let cropHeight = sourceHeight;
-    let cropX = 0;
-    let cropY = 0;
-
-    if (sourceRatio > targetRatio) {
-      cropWidth = sourceHeight * targetRatio;
-      cropX = (sourceWidth - cropWidth) * 0.5;
-    } else {
-      cropHeight = sourceWidth / targetRatio;
-      cropY = (sourceHeight - cropHeight) * 0.5;
+    try {
+      return await navigator.mediaDevices.getUserMedia(primaryConstraints);
+    } catch {
+      return navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user' },
+        audio: false,
+      });
     }
-
-    ctx.drawImage(source, cropX, cropY, cropWidth, cropHeight, 0, 0, targetWidth, targetHeight);
   }
 
   async function startCamera() {
@@ -1092,15 +1121,7 @@ function initPhotoBooth() {
       return;
     }
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user',
-          aspectRatio: { ideal: CAPTURE_ASPECT },
-          width: { ideal: CAPTURE_WIDTH },
-          height: { ideal: CAPTURE_HEIGHT }
-        },
-        audio: false,
-      });
+      stream = await getCameraStream();
       video.srcObject = stream;
       await video.play();
       video.classList.add('pb-active');
@@ -1140,14 +1161,12 @@ function initPhotoBooth() {
       setTimeout(() => camWrap.classList.remove('pb-flash'), 400);
 
       const fc = document.createElement('canvas');
-      fc.width = CAPTURE_WIDTH;
-      fc.height = CAPTURE_HEIGHT;
+      fc.width = video.videoWidth || 720;
+      fc.height = video.videoHeight || 540;
 
       const fctx = fc.getContext('2d');
-      const sourceWidth = video.videoWidth || CAPTURE_WIDTH;
-      const sourceHeight = video.videoHeight || CAPTURE_HEIGHT;
       fctx.filter = FILTER_MAP[selectedFilter] || 'none';
-      drawMediaCover(fctx, video, sourceWidth, sourceHeight, fc.width, fc.height);
+      fctx.drawImage(video, 0, 0, fc.width, fc.height);
       if (selectedFilter === 'love') {
         drawLoveStickers(fctx, fc.width, fc.height);
       }
@@ -1181,7 +1200,7 @@ function initPhotoBooth() {
     const W = 400;
     const PAD = 22;
     const PW = W - PAD * 2;
-    const PH = Math.round(PW * 9 / 16);
+    const PH = Math.round(PW * 4 / 3);
     const HEADER = 130;
     const FOOTER = 90;
     const GAP = 14;
