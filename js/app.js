@@ -770,11 +770,55 @@ function initPhotoBooth() {
   const COUNT_FROM = 3;
   const CAMERA_IDEAL_WIDTH = 1280;
   const CAMERA_IDEAL_HEIGHT = 720;
+  const ORIENTATION_LANDSCAPE = 'landscape';
+  const ORIENTATION_PORTRAIT = 'portrait';
   let stream = null;
   let capturing = false;
   const frames = [];
   let selectedFrame = 'romance';
   let selectedFilter = 'none';
+
+  function getViewportOrientation() {
+    const vv = window.visualViewport;
+    const width = vv && Number.isFinite(vv.width) ? vv.width : window.innerWidth;
+    const height = vv && Number.isFinite(vv.height) ? vv.height : window.innerHeight;
+    return width >= height ? ORIENTATION_LANDSCAPE : ORIENTATION_PORTRAIT;
+  }
+
+  function getScreenAngle() {
+    if (screen.orientation && Number.isFinite(screen.orientation.angle)) {
+      return screen.orientation.angle;
+    }
+    if (typeof window.orientation === 'number') {
+      return window.orientation;
+    }
+    return 0;
+  }
+
+  function getCaptureSourceSize() {
+    const track = stream ? stream.getVideoTracks()[0] : null;
+    const settings = track && track.getSettings ? track.getSettings() : null;
+
+    const sourceWidth = video.videoWidth || (settings && settings.width) || CAMERA_IDEAL_WIDTH;
+    const sourceHeight = video.videoHeight || (settings && settings.height) || CAMERA_IDEAL_HEIGHT;
+
+    return {
+      width: sourceWidth,
+      height: sourceHeight,
+      orientation: sourceWidth >= sourceHeight ? ORIENTATION_LANDSCAPE : ORIENTATION_PORTRAIT,
+    };
+  }
+
+  function getRotationDegreesForCapture(sourceOrientation, targetOrientation) {
+    if (sourceOrientation === targetOrientation) return 0;
+
+    const angle = getScreenAngle();
+    if (targetOrientation === ORIENTATION_PORTRAIT) {
+      return Math.abs(angle) === 180 ? 90 : -90;
+    }
+
+    return angle === -90 || angle === 270 ? -90 : 90;
+  }
 
   function drawContainedSelfie(ctx, img, x, y, width, height, bgColor = 'rgba(10, 6, 8, 0.92)') {
     const sourceWidth = img.width || img.videoWidth || width;
@@ -1137,45 +1181,42 @@ function initPhotoBooth() {
   }
 
   function syncCameraWrapRatio() {
-    let vw = video.videoWidth;
-    let vh = video.videoHeight;
-    if (!vw || !vh) return;
+    const source = getCaptureSourceSize();
+    const targetOrientation = getViewportOrientation();
+    const ratioWidth = source.orientation === targetOrientation ? source.width : source.height;
+    const ratioHeight = source.orientation === targetOrientation ? source.height : source.width;
 
-    // If raw video orientation doesn't match device orientation, swap for correct preview
-    const deviceIsLandscape = window.innerWidth > window.innerHeight;
-    const videoIsLandscape = vw >= vh;
-    if (videoIsLandscape !== deviceIsLandscape) [vw, vh] = [vh, vw];
-
-    camWrap.style.aspectRatio = `${vw} / ${vh}`;
+    if (!ratioWidth || !ratioHeight) return;
+    camWrap.style.aspectRatio = `${ratioWidth} / ${ratioHeight}`;
   }
 
   function captureOrientedFrame() {
-    const rawW = video.videoWidth || 1280;
-    const rawH = video.videoHeight || 720;
+    const source = getCaptureSourceSize();
+    const targetOrientation = getViewportOrientation();
+    const rotateDeg = getRotationDegreesForCapture(source.orientation, targetOrientation);
+
     const fc = document.createElement('canvas');
     const fctx = fc.getContext('2d');
 
-    const deviceIsLandscape = window.innerWidth > window.innerHeight;
-    const videoIsLandscape = rawW >= rawH;
-
     fctx.filter = FILTER_MAP[selectedFilter] || 'none';
 
-    if (videoIsLandscape !== deviceIsLandscape) {
-      // Safari iOS delivers a landscape raw frame (rawW > rawH) even when device is in portrait.
-      // The person's head sits on the RIGHT edge of that landscape frame.
-      // A 90° CCW rotation maps: right-edge → top  ∴ head appears at top of portrait canvas.
-      //   CTM: translate(0, rawW) then rotate(-π/2)
-      //   Pixel mapping: video(p,q) → canvas(q, rawW−p)
-      //   So video-right (p=rawW) → canvas col 0 = canvas top ✓
-      fc.width = rawH;   // portrait width
-      fc.height = rawW;  // portrait height
-      fctx.translate(0, rawW);
-      fctx.rotate(-Math.PI / 2);
-      fctx.drawImage(video, 0, 0, rawW, rawH);
+    if (rotateDeg === 0) {
+      fc.width = source.width;
+      fc.height = source.height;
+      fctx.drawImage(video, 0, 0, source.width, source.height);
     } else {
-      fc.width = rawW;
-      fc.height = rawH;
-      fctx.drawImage(video, 0, 0, rawW, rawH);
+      fc.width = source.height;
+      fc.height = source.width;
+
+      if (rotateDeg > 0) {
+        fctx.translate(fc.width, 0);
+        fctx.rotate(Math.PI / 2);
+      } else {
+        fctx.translate(0, fc.height);
+        fctx.rotate(-Math.PI / 2);
+      }
+
+      fctx.drawImage(video, 0, 0, source.width, source.height);
     }
 
     fctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -1204,6 +1245,7 @@ function initPhotoBooth() {
       }
       syncCameraWrapRatio();
       window.addEventListener('resize', syncCameraWrapRatio);
+      window.addEventListener('orientationchange', syncCameraWrapRatio);
 
       video.classList.add('pb-active');
       video.style.filter = FILTER_MAP[selectedFilter] || 'none';
@@ -1333,6 +1375,7 @@ function initPhotoBooth() {
         video.srcObject = null;
         video.classList.remove('pb-active');
         window.removeEventListener('resize', syncCameraWrapRatio);
+        window.removeEventListener('orientationchange', syncCameraWrapRatio);
         camWrap.style.aspectRatio = '';
         syncLovestruckMode();
         if (idleOverlay) idleOverlay.classList.remove('pb-hidden');
