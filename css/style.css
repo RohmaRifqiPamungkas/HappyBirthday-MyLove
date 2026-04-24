@@ -1426,7 +1426,7 @@ button {
 .photobooth__camera-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   background: #0a0608;
   border-radius: var(--r);
   overflow: hidden;
@@ -1918,10 +1918,6 @@ button {
 
 /* ── Tablet portrait (601px – 768px) ─────────────────────────── */
 @media (max-width: 768px) {
-  .photobooth__camera-wrap {
-    aspect-ratio: 3 / 4;
-  }
-
   .photobooth__layout {
     grid-template-columns: 1fr;
     gap: 1.75rem;

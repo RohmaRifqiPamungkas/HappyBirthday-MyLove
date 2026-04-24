@@ -769,7 +769,7 @@ function initPhotoBooth() {
   const SHOTS = 3;
   const COUNT_FROM = 3;
   const CAMERA_IDEAL_WIDTH = 1280;
-  const CAMERA_IDEAL_HEIGHT = 960;
+  const CAMERA_IDEAL_HEIGHT = 720;
   let stream = null;
   let capturing = false;
   const frames = [];
@@ -1093,24 +1093,49 @@ function initPhotoBooth() {
   function pbWait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
   async function getCameraStream() {
+    const isSafariIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // Safari iOS works best with plain width/height constraints (no aspectRatio/resizeMode)
+    const safariConstraints = {
+      video: {
+        facingMode: { ideal: 'user' },
+        width: { ideal: CAMERA_IDEAL_WIDTH },
+        height: { ideal: CAMERA_IDEAL_HEIGHT },
+      },
+      audio: false,
+    };
+
     const primaryConstraints = {
       video: {
         facingMode: { ideal: 'user' },
         width: { ideal: CAMERA_IDEAL_WIDTH },
         height: { ideal: CAMERA_IDEAL_HEIGHT },
-        aspectRatio: { ideal: 4 / 3 },
-        resizeMode: 'none'
+        aspectRatio: { ideal: 16 / 9 },
       },
       audio: false,
     };
 
+    const firstTry = isSafariIOS ? safariConstraints : primaryConstraints;
+
     try {
-      return await navigator.mediaDevices.getUserMedia(primaryConstraints);
+      return await navigator.mediaDevices.getUserMedia(firstTry);
     } catch {
-      return navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' },
-        audio: false,
-      });
+      try {
+        return await navigator.mediaDevices.getUserMedia(primaryConstraints);
+      } catch {
+        return navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user' },
+          audio: false,
+        });
+      }
+    }
+  }
+
+  function syncCameraWrapRatio() {
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    if (vw && vh) {
+      camWrap.style.aspectRatio = `${vw} / ${vh}`;
     }
   }
 
@@ -1124,6 +1149,16 @@ function initPhotoBooth() {
       stream = await getCameraStream();
       video.srcObject = stream;
       await video.play();
+
+      // Safari sometimes reports 0x0 immediately after play() — wait for metadata
+      if (!video.videoWidth || !video.videoHeight) {
+        await new Promise(resolve => {
+          video.addEventListener('loadedmetadata', resolve, { once: true });
+          setTimeout(resolve, 600);
+        });
+      }
+      syncCameraWrapRatio();
+
       video.classList.add('pb-active');
       video.style.filter = FILTER_MAP[selectedFilter] || 'none';
       syncLovestruckMode();
@@ -1200,7 +1235,15 @@ function initPhotoBooth() {
     const W = 400;
     const PAD = 22;
     const PW = W - PAD * 2;
-    const PH = Math.round(PW * 4 / 3);
+
+    // Derive photo slot height from actual captured frame — defaults to 16:9
+    let photoRatio = 16 / 9;
+    if (frames.length > 0 && frames[0].width && frames[0].height) {
+      const raw = frames[0].width / frames[0].height;
+      photoRatio = Math.min(Math.max(raw, 0.4), 3); // clamp to sane range
+    }
+    const PH = Math.round(PW / photoRatio);
+
     const HEADER = 130;
     const FOOTER = 90;
     const GAP = 14;
