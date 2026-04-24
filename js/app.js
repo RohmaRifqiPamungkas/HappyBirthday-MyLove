@@ -773,6 +773,161 @@ function initPhotoBooth() {
   const frames = [];
   let selectedFrame = 'romance';
   let selectedFilter = 'none';
+  const OUTPUT_FRAME_WIDTH = 1280;
+  const OUTPUT_FRAME_HEIGHT = 720;
+
+  function isLikelyMobileDevice() {
+    const mobileUA = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent || '');
+    const coarsePointer = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(pointer: coarse)').matches
+      : false;
+    return mobileUA || coarsePointer;
+  }
+
+  function getViewportOrientationAngle() {
+    const orientationApi = window.screen && window.screen.orientation;
+    const rawAngle = typeof orientationApi?.angle === 'number'
+      ? orientationApi.angle
+      : (typeof window.orientation === 'number' ? window.orientation : 0);
+    const snapped = Math.round(rawAngle / 90) * 90;
+    return ((snapped % 360) + 360) % 360;
+  }
+
+  function getQuarterTurnsFromAngle(angle) {
+    if (angle === 90) return 1;
+    if (angle === 270) return -1;
+    if (angle === 180) return 2;
+    return 0;
+  }
+
+  function getCaptureQuarterTurns(sourceWidth, sourceHeight) {
+    if (!sourceWidth || !sourceHeight) return 0;
+
+    const sourceLandscape = sourceWidth >= sourceHeight;
+    const viewportLandscape = window.matchMedia('(orientation: landscape)').matches;
+    if (sourceLandscape === viewportLandscape) return 0;
+
+    if (!isLikelyMobileDevice()) return 0;
+
+    const angleTurns = getQuarterTurnsFromAngle(getViewportOrientationAngle());
+    if (angleTurns !== 0) return angleTurns;
+
+    return viewportLandscape ? 1 : -1;
+  }
+
+  function rotateCanvasByQuarterTurns(sourceCanvas, quarterTurns) {
+    const normalizedTurns = ((quarterTurns % 4) + 4) % 4;
+    if (normalizedTurns === 0) return sourceCanvas;
+
+    const sourceWidth = sourceCanvas.width;
+    const sourceHeight = sourceCanvas.height;
+    const isSwap = normalizedTurns % 2 === 1;
+
+    const rotated = document.createElement('canvas');
+    rotated.width = isSwap ? sourceHeight : sourceWidth;
+    rotated.height = isSwap ? sourceWidth : sourceHeight;
+
+    const rotatedCtx = rotated.getContext('2d');
+    if (!rotatedCtx) return sourceCanvas;
+
+    rotatedCtx.translate(rotated.width / 2, rotated.height / 2);
+    rotatedCtx.rotate(normalizedTurns * (Math.PI / 2));
+    rotatedCtx.drawImage(sourceCanvas, -sourceWidth / 2, -sourceHeight / 2);
+
+    return rotated;
+  }
+
+  function getFittedRect(imageWidth, imageHeight, targetWidth, targetHeight, fitMode) {
+    const scale = fitMode === 'cover'
+      ? Math.max(targetWidth / imageWidth, targetHeight / imageHeight)
+      : Math.min(targetWidth / imageWidth, targetHeight / imageHeight);
+    const drawWidth = imageWidth * scale;
+    const drawHeight = imageHeight * scale;
+
+    return {
+      drawWidth,
+      drawHeight,
+      drawX: (targetWidth - drawWidth) / 2,
+      drawY: (targetHeight - drawHeight) / 2,
+    };
+  }
+
+  function drawImageFitted(ctx, image, targetX, targetY, targetWidth, targetHeight, options = {}) {
+    if (!image || !targetWidth || !targetHeight) return;
+
+    const fitMode = options.fit === 'cover' ? 'cover' : 'contain';
+    const shouldMirror = options.mirror !== false;
+    const withBackdrop = Boolean(options.backdrop);
+    const backdropAlpha = Number.isFinite(options.backdropAlpha) ? options.backdropAlpha : 0.2;
+
+    const imageWidth = image.width || image.videoWidth || targetWidth;
+    const imageHeight = image.height || image.videoHeight || targetHeight;
+    if (!imageWidth || !imageHeight) return;
+
+    if (withBackdrop) {
+      const coverRect = getFittedRect(imageWidth, imageHeight, targetWidth, targetHeight, 'cover');
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(targetX, targetY, targetWidth, targetHeight);
+      ctx.clip();
+      ctx.globalAlpha = backdropAlpha;
+      ctx.filter = 'blur(18px) saturate(1.06)';
+
+      if (shouldMirror) {
+        ctx.translate(targetX + targetWidth, targetY);
+        ctx.scale(-1, 1);
+        ctx.drawImage(image, coverRect.drawX, coverRect.drawY, coverRect.drawWidth, coverRect.drawHeight);
+      } else {
+        ctx.translate(targetX, targetY);
+        ctx.drawImage(image, coverRect.drawX, coverRect.drawY, coverRect.drawWidth, coverRect.drawHeight);
+      }
+
+      ctx.filter = 'none';
+      ctx.restore();
+      ctx.fillStyle = 'rgba(10, 6, 8, 0.28)';
+      ctx.fillRect(targetX, targetY, targetWidth, targetHeight);
+    }
+
+    const fittedRect = getFittedRect(imageWidth, imageHeight, targetWidth, targetHeight, fitMode);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(targetX, targetY, targetWidth, targetHeight);
+    ctx.clip();
+
+    if (shouldMirror) {
+      ctx.translate(targetX + targetWidth, targetY);
+      ctx.scale(-1, 1);
+      ctx.drawImage(image, fittedRect.drawX, fittedRect.drawY, fittedRect.drawWidth, fittedRect.drawHeight);
+    } else {
+      ctx.translate(targetX, targetY);
+      ctx.drawImage(image, fittedRect.drawX, fittedRect.drawY, fittedRect.drawWidth, fittedRect.drawHeight);
+    }
+
+    ctx.restore();
+  }
+
+  function normalizeCapturedFrame(rawFrame) {
+    const quarterTurns = getCaptureQuarterTurns(rawFrame.width, rawFrame.height);
+    const orientedFrame = rotateCanvasByQuarterTurns(rawFrame, quarterTurns);
+
+    const output = document.createElement('canvas');
+    output.width = OUTPUT_FRAME_WIDTH;
+    output.height = OUTPUT_FRAME_HEIGHT;
+
+    const outputCtx = output.getContext('2d');
+    if (!outputCtx) return rawFrame;
+
+    outputCtx.fillStyle = '#0a0608';
+    outputCtx.fillRect(0, 0, output.width, output.height);
+    drawImageFitted(outputCtx, orientedFrame, 0, 0, output.width, output.height, {
+      fit: 'contain',
+      mirror: false,
+      backdrop: true,
+      backdropAlpha: 0.25,
+    });
+
+    return output;
+  }
 
   const FRAMES = {
 
@@ -804,7 +959,7 @@ function initPhotoBooth() {
         ctx.strokeStyle = dg; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(PAD, 106); ctx.lineTo(W - PAD, 106); ctx.stroke();
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
-        ctx.save(); ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
+        drawImageFitted(ctx, img, PAD, y, PW, PH, { fit: 'contain', mirror: true, backdrop: true, backdropAlpha: 0.2 });
         ctx.strokeStyle = 'rgba(196,117,138,0.16)'; ctx.lineWidth = 0.75; ctx.strokeRect(PAD, y, PW, PH);
         ctx.fillStyle = 'rgba(245,234,232,0.4)'; ctx.font = '400 8px "Lato",Arial,sans-serif';
         ctx.textAlign = 'left'; ctx.fillText(`0${i + 1}`, PAD + 6, y + 14);
@@ -859,7 +1014,7 @@ function initPhotoBooth() {
         ctx.beginPath(); ctx.moveTo(PAD, 100); ctx.lineTo(W - PAD, 100); ctx.stroke();
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
-        ctx.save(); ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
+        drawImageFitted(ctx, img, PAD, y, PW, PH, { fit: 'contain', mirror: true, backdrop: true, backdropAlpha: 0.2 });
         // Vignette
         const vg = ctx.createRadialGradient(PAD + PW / 2, y + PH / 2, PH * 0.28, PAD + PW / 2, y + PH / 2, PH * 0.72);
         vg.addColorStop(0, 'transparent'); vg.addColorStop(1, 'rgba(0,0,0,0.42)');
@@ -933,7 +1088,8 @@ function initPhotoBooth() {
         // Rounded clip
         ctx.save();
         this._roundedPhoto(ctx, PAD, y, PW, PH, r, () => ctx.clip());
-        ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
+        drawImageFitted(ctx, img, PAD, y, PW, PH, { fit: 'contain', mirror: true, backdrop: true, backdropAlpha: 0.18 });
+        ctx.restore();
         // Pink tint
         this._roundedPhoto(ctx, PAD, y, PW, PH, r, () => { ctx.fillStyle = 'rgba(255,200,215,0.07)'; ctx.fill(); });
         // Rounded border
@@ -994,7 +1150,7 @@ function initPhotoBooth() {
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
         // Cream polaroid mat
         ctx.fillStyle = 'rgba(252,248,235,0.92)'; ctx.fillRect(PAD - 5, y - 5, PW + 10, PH + 10);
-        ctx.save(); ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
+        drawImageFitted(ctx, img, PAD, y, PW, PH, { fit: 'contain', mirror: true, backdrop: true, backdropAlpha: 0.18 });
         // Sepia overlay
         ctx.fillStyle = 'rgba(150,100,45,0.2)'; ctx.fillRect(PAD, y, PW, PH);
         ctx.strokeStyle = 'rgba(90,58,28,0.22)'; ctx.lineWidth = 1; ctx.strokeRect(PAD, y, PW, PH);
@@ -1121,12 +1277,13 @@ function initPhotoBooth() {
       }
       fctx.filter = 'none';
 
-      frames.push(fc);
+      const normalizedFrame = normalizeCapturedFrame(fc);
+      frames.push(normalizedFrame);
       if (shotDots[i]) shotDots[i].classList.add('taken');
 
       const thumb = document.createElement('div');
       thumb.className = 'pb-thumb';
-      thumb.style.backgroundImage = `url(${fc.toDataURL('image/jpeg', 0.7)})`;
+      thumb.style.backgroundImage = `url(${normalizedFrame.toDataURL('image/jpeg', 0.7)})`;
       thumbsWrap.appendChild(thumb);
 
       if (i < SHOTS - 1) await pbWait(700);
@@ -1149,7 +1306,7 @@ function initPhotoBooth() {
     const W = 400;
     const PAD = 22;
     const PW = W - PAD * 2;
-    const PH = Math.round(PW * 3 / 4);
+    const PH = Math.round(PW * 9 / 16);
     const HEADER = 130;
     const FOOTER = 90;
     const GAP = 14;
