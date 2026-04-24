@@ -775,6 +775,7 @@ function initPhotoBooth() {
   let selectedFilter = 'none';
   const OUTPUT_FRAME_WIDTH = 1280;
   const OUTPUT_FRAME_HEIGHT = 720;
+  const OUTPUT_PHOTO_FIT_MODE = 'cover';
 
   function isLikelyMobileDevice() {
     const mobileUA = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent || '');
@@ -930,9 +931,9 @@ function initPhotoBooth() {
     outputCtx.fillStyle = '#0a0608';
     outputCtx.fillRect(0, 0, output.width, output.height);
     drawImageFitted(outputCtx, orientedFrame, 0, 0, output.width, output.height, {
-      fit: 'contain',
+      fit: OUTPUT_PHOTO_FIT_MODE,
       mirror: false,
-      backdrop: true,
+      backdrop: OUTPUT_PHOTO_FIT_MODE === 'contain',
       backdropAlpha: 0.25,
     });
 
@@ -969,7 +970,12 @@ function initPhotoBooth() {
         ctx.strokeStyle = dg; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(PAD, 106); ctx.lineTo(W - PAD, 106); ctx.stroke();
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
-        drawImageFitted(ctx, img, PAD, y, PW, PH, { fit: 'contain', mirror: true, backdrop: true, backdropAlpha: 0.2 });
+        drawImageFitted(ctx, img, PAD, y, PW, PH, {
+          fit: OUTPUT_PHOTO_FIT_MODE,
+          mirror: true,
+          backdrop: OUTPUT_PHOTO_FIT_MODE === 'contain',
+          backdropAlpha: 0.2
+        });
         ctx.strokeStyle = 'rgba(196,117,138,0.16)'; ctx.lineWidth = 0.75; ctx.strokeRect(PAD, y, PW, PH);
         ctx.fillStyle = 'rgba(245,234,232,0.4)'; ctx.font = '400 8px "Lato",Arial,sans-serif';
         ctx.textAlign = 'left'; ctx.fillText(`0${i + 1}`, PAD + 6, y + 14);
@@ -1024,7 +1030,12 @@ function initPhotoBooth() {
         ctx.beginPath(); ctx.moveTo(PAD, 100); ctx.lineTo(W - PAD, 100); ctx.stroke();
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
-        drawImageFitted(ctx, img, PAD, y, PW, PH, { fit: 'contain', mirror: true, backdrop: true, backdropAlpha: 0.2 });
+        drawImageFitted(ctx, img, PAD, y, PW, PH, {
+          fit: OUTPUT_PHOTO_FIT_MODE,
+          mirror: true,
+          backdrop: OUTPUT_PHOTO_FIT_MODE === 'contain',
+          backdropAlpha: 0.2
+        });
         // Vignette
         const vg = ctx.createRadialGradient(PAD + PW / 2, y + PH / 2, PH * 0.28, PAD + PW / 2, y + PH / 2, PH * 0.72);
         vg.addColorStop(0, 'transparent'); vg.addColorStop(1, 'rgba(0,0,0,0.42)');
@@ -1098,7 +1109,12 @@ function initPhotoBooth() {
         // Rounded clip
         ctx.save();
         this._roundedPhoto(ctx, PAD, y, PW, PH, r, () => ctx.clip());
-        drawImageFitted(ctx, img, PAD, y, PW, PH, { fit: 'contain', mirror: true, backdrop: true, backdropAlpha: 0.18 });
+        drawImageFitted(ctx, img, PAD, y, PW, PH, {
+          fit: OUTPUT_PHOTO_FIT_MODE,
+          mirror: true,
+          backdrop: OUTPUT_PHOTO_FIT_MODE === 'contain',
+          backdropAlpha: 0.18
+        });
         ctx.restore();
         // Pink tint
         this._roundedPhoto(ctx, PAD, y, PW, PH, r, () => { ctx.fillStyle = 'rgba(255,200,215,0.07)'; ctx.fill(); });
@@ -1160,7 +1176,12 @@ function initPhotoBooth() {
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
         // Cream polaroid mat
         ctx.fillStyle = 'rgba(252,248,235,0.92)'; ctx.fillRect(PAD - 5, y - 5, PW + 10, PH + 10);
-        drawImageFitted(ctx, img, PAD, y, PW, PH, { fit: 'contain', mirror: true, backdrop: true, backdropAlpha: 0.18 });
+        drawImageFitted(ctx, img, PAD, y, PW, PH, {
+          fit: OUTPUT_PHOTO_FIT_MODE,
+          mirror: true,
+          backdrop: OUTPUT_PHOTO_FIT_MODE === 'contain',
+          backdropAlpha: 0.18
+        });
         // Sepia overlay
         ctx.fillStyle = 'rgba(150,100,45,0.2)'; ctx.fillRect(PAD, y, PW, PH);
         ctx.strokeStyle = 'rgba(90,58,28,0.22)'; ctx.lineWidth = 1; ctx.strokeRect(PAD, y, PW, PH);
