@@ -793,9 +793,14 @@ function initPhotoBooth() {
     return ((snapped % 360) + 360) % 360;
   }
 
+  function getViewportOrientationType() {
+    const orientationApi = window.screen && window.screen.orientation;
+    return typeof orientationApi?.type === 'string' ? orientationApi.type : '';
+  }
+
   function getQuarterTurnsFromAngle(angle) {
-    if (angle === 90) return 1;
-    if (angle === 270) return -1;
+    if (angle === 90) return -1;
+    if (angle === 270) return 1;
     if (angle === 180) return 2;
     return 0;
   }
@@ -809,10 +814,15 @@ function initPhotoBooth() {
 
     if (!isLikelyMobileDevice()) return 0;
 
+    const orientationType = getViewportOrientationType();
+    if (viewportLandscape && orientationType.includes('landscape-primary')) return -1;
+    if (viewportLandscape && orientationType.includes('landscape-secondary')) return 1;
+    if (!viewportLandscape && orientationType.includes('portrait-secondary')) return 2;
+
     const angleTurns = getQuarterTurnsFromAngle(getViewportOrientationAngle());
     if (angleTurns !== 0) return angleTurns;
 
-    return viewportLandscape ? 1 : -1;
+    return viewportLandscape ? -1 : 1;
   }
 
   function rotateCanvasByQuarterTurns(sourceCanvas, quarterTurns) {
