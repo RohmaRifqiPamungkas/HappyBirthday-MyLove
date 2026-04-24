@@ -1161,19 +1161,16 @@ function initPhotoBooth() {
     fctx.filter = FILTER_MAP[selectedFilter] || 'none';
 
     if (videoIsLandscape !== deviceIsLandscape) {
-      // Safari iOS: raw frame is landscape but device is portrait (or vice versa) — rotate 90°
-      fc.width = rawH;
-      fc.height = rawW;
-      const angle = screen.orientation?.angle ?? 0;
-      if (angle === -90 || angle === 270) {
-        // Landscape-left: rotate CCW
-        fctx.translate(0, rawW);
-        fctx.rotate(-Math.PI / 2);
-      } else {
-        // Portrait or landscape-right: rotate CW
-        fctx.translate(rawH, 0);
-        fctx.rotate(Math.PI / 2);
-      }
+      // Safari iOS delivers a landscape raw frame (rawW > rawH) even when device is in portrait.
+      // The person's head sits on the RIGHT edge of that landscape frame.
+      // A 90° CCW rotation maps: right-edge → top  ∴ head appears at top of portrait canvas.
+      //   CTM: translate(0, rawW) then rotate(-π/2)
+      //   Pixel mapping: video(p,q) → canvas(q, rawW−p)
+      //   So video-right (p=rawW) → canvas col 0 = canvas top ✓
+      fc.width = rawH;   // portrait width
+      fc.height = rawW;  // portrait height
+      fctx.translate(0, rawW);
+      fctx.rotate(-Math.PI / 2);
       fctx.drawImage(video, 0, 0, rawW, rawH);
     } else {
       fc.width = rawW;
