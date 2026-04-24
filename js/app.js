@@ -1236,13 +1236,8 @@ function initPhotoBooth() {
     const PAD = 22;
     const PW = W - PAD * 2;
 
-    // Derive photo slot height from actual captured frame — defaults to 16:9
-    let photoRatio = 16 / 9;
-    if (frames.length > 0 && frames[0].width && frames[0].height) {
-      const raw = frames[0].width / frames[0].height;
-      photoRatio = Math.min(Math.max(raw, 0.4), 3); // clamp to sane range
-    }
-    const PH = Math.round(PW / photoRatio);
+    // Each photo slot is always 16:9 landscape for consistent output across all devices
+    const PH = Math.round(PW * 9 / 16);
 
     const HEADER = 130;
     const FOOTER = 90;
