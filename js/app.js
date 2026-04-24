@@ -768,6 +768,9 @@ function initPhotoBooth() {
 
   const SHOTS = 3;
   const COUNT_FROM = 3;
+  const CAPTURE_ASPECT = 16 / 9;
+  const CAPTURE_WIDTH = 1280;
+  const CAPTURE_HEIGHT = Math.round(CAPTURE_WIDTH / CAPTURE_ASPECT);
   let stream = null;
   let capturing = false;
   const frames = [];
@@ -1060,6 +1063,28 @@ function initPhotoBooth() {
 
   function pbWait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
+  function drawMediaCover(ctx, source, sourceWidth, sourceHeight, targetWidth, targetHeight) {
+    if (!sourceWidth || !sourceHeight || !targetWidth || !targetHeight) return;
+
+    const sourceRatio = sourceWidth / sourceHeight;
+    const targetRatio = targetWidth / targetHeight;
+
+    let cropWidth = sourceWidth;
+    let cropHeight = sourceHeight;
+    let cropX = 0;
+    let cropY = 0;
+
+    if (sourceRatio > targetRatio) {
+      cropWidth = sourceHeight * targetRatio;
+      cropX = (sourceWidth - cropWidth) * 0.5;
+    } else {
+      cropHeight = sourceWidth / targetRatio;
+      cropY = (sourceHeight - cropHeight) * 0.5;
+    }
+
+    ctx.drawImage(source, cropX, cropY, cropWidth, cropHeight, 0, 0, targetWidth, targetHeight);
+  }
+
   async function startCamera() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       startBtn.textContent = '⚠️ Browser tidak mendukung kamera';
@@ -1068,7 +1093,12 @@ function initPhotoBooth() {
     }
     try {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 540 } },
+        video: {
+          facingMode: 'user',
+          aspectRatio: { ideal: CAPTURE_ASPECT },
+          width: { ideal: CAPTURE_WIDTH },
+          height: { ideal: CAPTURE_HEIGHT }
+        },
         audio: false,
       });
       video.srcObject = stream;
@@ -1110,12 +1140,14 @@ function initPhotoBooth() {
       setTimeout(() => camWrap.classList.remove('pb-flash'), 400);
 
       const fc = document.createElement('canvas');
-      fc.width = video.videoWidth || 640;
-      fc.height = video.videoHeight || 480;
+      fc.width = CAPTURE_WIDTH;
+      fc.height = CAPTURE_HEIGHT;
 
       const fctx = fc.getContext('2d');
+      const sourceWidth = video.videoWidth || CAPTURE_WIDTH;
+      const sourceHeight = video.videoHeight || CAPTURE_HEIGHT;
       fctx.filter = FILTER_MAP[selectedFilter] || 'none';
-      fctx.drawImage(video, 0, 0, fc.width, fc.height);
+      drawMediaCover(fctx, video, sourceWidth, sourceHeight, fc.width, fc.height);
       if (selectedFilter === 'love') {
         drawLoveStickers(fctx, fc.width, fc.height);
       }
@@ -1149,7 +1181,7 @@ function initPhotoBooth() {
     const W = 400;
     const PAD = 22;
     const PW = W - PAD * 2;
-    const PH = Math.round(PW * 3 / 4);
+    const PH = Math.round(PW * 9 / 16);
     const HEADER = 130;
     const FOOTER = 90;
     const GAP = 14;
