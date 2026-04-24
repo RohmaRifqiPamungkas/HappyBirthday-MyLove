@@ -1132,11 +1132,54 @@ function initPhotoBooth() {
   }
 
   function syncCameraWrapRatio() {
-    const vw = video.videoWidth;
-    const vh = video.videoHeight;
-    if (vw && vh) {
-      camWrap.style.aspectRatio = `${vw} / ${vh}`;
+    let vw = video.videoWidth;
+    let vh = video.videoHeight;
+    if (!vw || !vh) return;
+
+    // If raw video orientation doesn't match device orientation, swap for correct preview
+    const deviceIsLandscape = window.innerWidth > window.innerHeight;
+    const videoIsLandscape = vw >= vh;
+    if (videoIsLandscape !== deviceIsLandscape) [vw, vh] = [vh, vw];
+
+    camWrap.style.aspectRatio = `${vw} / ${vh}`;
+  }
+
+  function captureOrientedFrame() {
+    const rawW = video.videoWidth || 1280;
+    const rawH = video.videoHeight || 720;
+    const fc = document.createElement('canvas');
+    const fctx = fc.getContext('2d');
+
+    const deviceIsLandscape = window.innerWidth > window.innerHeight;
+    const videoIsLandscape = rawW >= rawH;
+
+    fctx.filter = FILTER_MAP[selectedFilter] || 'none';
+
+    if (videoIsLandscape !== deviceIsLandscape) {
+      // Safari iOS: raw frame is landscape but device is portrait (or vice versa) — rotate 90°
+      fc.width = rawH;
+      fc.height = rawW;
+      const angle = screen.orientation?.angle ?? 0;
+      if (angle === -90 || angle === 270) {
+        // Landscape-left: rotate CCW
+        fctx.translate(0, rawW);
+        fctx.rotate(-Math.PI / 2);
+      } else {
+        // Portrait or landscape-right: rotate CW
+        fctx.translate(rawH, 0);
+        fctx.rotate(Math.PI / 2);
+      }
+      fctx.drawImage(video, 0, 0, rawW, rawH);
+    } else {
+      fc.width = rawW;
+      fc.height = rawH;
+      fctx.drawImage(video, 0, 0, rawW, rawH);
     }
+
+    fctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (selectedFilter === 'love') drawLoveStickers(fctx, fc.width, fc.height);
+    fctx.filter = 'none';
+    return fc;
   }
 
   async function startCamera() {
@@ -1158,6 +1201,7 @@ function initPhotoBooth() {
         });
       }
       syncCameraWrapRatio();
+      window.addEventListener('resize', syncCameraWrapRatio);
 
       video.classList.add('pb-active');
       video.style.filter = FILTER_MAP[selectedFilter] || 'none';
@@ -1195,17 +1239,7 @@ function initPhotoBooth() {
       camWrap.classList.add('pb-flash');
       setTimeout(() => camWrap.classList.remove('pb-flash'), 400);
 
-      const fc = document.createElement('canvas');
-      fc.width = video.videoWidth || 720;
-      fc.height = video.videoHeight || 540;
-
-      const fctx = fc.getContext('2d');
-      fctx.filter = FILTER_MAP[selectedFilter] || 'none';
-      fctx.drawImage(video, 0, 0, fc.width, fc.height);
-      if (selectedFilter === 'love') {
-        drawLoveStickers(fctx, fc.width, fc.height);
-      }
-      fctx.filter = 'none';
+      const fc = captureOrientedFrame();
 
       frames.push(fc);
       if (shotDots[i]) shotDots[i].classList.add('taken');
@@ -1296,6 +1330,8 @@ function initPhotoBooth() {
         stream = null;
         video.srcObject = null;
         video.classList.remove('pb-active');
+        window.removeEventListener('resize', syncCameraWrapRatio);
+        camWrap.style.aspectRatio = '';
         syncLovestruckMode();
         if (idleOverlay) idleOverlay.classList.remove('pb-hidden');
         startBtn.textContent = '📷 Buka Kamera';
