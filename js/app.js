@@ -768,97 +768,11 @@ function initPhotoBooth() {
 
   const SHOTS = 3;
   const COUNT_FROM = 3;
-  const CAMERA_IDEAL_WIDTH = 1280;
-  const CAMERA_IDEAL_HEIGHT = 720;
-  const ORIENTATION_LANDSCAPE = 'landscape';
-  const ORIENTATION_PORTRAIT = 'portrait';
   let stream = null;
-  let streamRotationDeg = 0;
   let capturing = false;
   const frames = [];
   let selectedFrame = 'romance';
   let selectedFilter = 'none';
-
-  function getViewportOrientation() {
-    const vv = window.visualViewport;
-    const width = vv && Number.isFinite(vv.width) ? vv.width : window.innerWidth;
-    const height = vv && Number.isFinite(vv.height) ? vv.height : window.innerHeight;
-    return width >= height ? ORIENTATION_LANDSCAPE : ORIENTATION_PORTRAIT;
-  }
-
-  function getScreenAngle() {
-    if (screen.orientation && Number.isFinite(screen.orientation.angle)) {
-      return screen.orientation.angle;
-    }
-    if (typeof window.orientation === 'number') {
-      return window.orientation;
-    }
-    return 0;
-  }
-
-  function getCaptureSourceSize() {
-    const track = stream ? stream.getVideoTracks()[0] : null;
-    const settings = track && track.getSettings ? track.getSettings() : null;
-
-    const sourceWidth = video.videoWidth || (settings && settings.width) || CAMERA_IDEAL_WIDTH;
-    const sourceHeight = video.videoHeight || (settings && settings.height) || CAMERA_IDEAL_HEIGHT;
-
-    return {
-      width: sourceWidth,
-      height: sourceHeight,
-      orientation: sourceWidth >= sourceHeight ? ORIENTATION_LANDSCAPE : ORIENTATION_PORTRAIT,
-    };
-  }
-
-  function getRotationDegreesForCapture(sourceOrientation, targetOrientation) {
-    if (sourceOrientation === targetOrientation) return 0;
-
-    const angle = getScreenAngle();
-    const normalized = ((angle % 360) + 360) % 360;
-
-    if (targetOrientation === ORIENTATION_PORTRAIT && sourceOrientation === ORIENTATION_LANDSCAPE) {
-      if (normalized === 180) return 90;
-      return -90;
-    }
-
-    if (targetOrientation === ORIENTATION_LANDSCAPE && sourceOrientation === ORIENTATION_PORTRAIT) {
-      if (normalized === 90 || normalized === 270) return 0;
-      return 90;
-    }
-
-    return 0;
-  }
-
-  function resolveStreamRotation() {
-    const source = getCaptureSourceSize();
-    const viewportOrientation = getViewportOrientation();
-    streamRotationDeg = getRotationDegreesForCapture(source.orientation, viewportOrientation);
-  }
-
-  function drawContainedSelfie(ctx, img, x, y, width, height, bgColor = 'rgba(10, 6, 8, 0.92)') {
-    const sourceWidth = img.width || img.videoWidth || width;
-    const sourceHeight = img.height || img.videoHeight || height;
-    if (!sourceWidth || !sourceHeight) return;
-
-    // Cover: scale to fill slot completely, crop overflow
-    const scale = Math.max(width / sourceWidth, height / sourceHeight);
-    const drawWidth = sourceWidth * scale;
-    const drawHeight = sourceHeight * scale;
-    const drawX = x + (width - drawWidth) * 0.5;
-    const drawY = y + (height - drawHeight) * 0.5;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(x, y, width, height);
-    ctx.clip();
-
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(x, y, width, height);
-    ctx.translate(drawX + drawWidth, drawY);
-    ctx.scale(-1, 1);
-    ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
-    ctx.restore();
-  }
 
   const FRAMES = {
 
@@ -890,7 +804,7 @@ function initPhotoBooth() {
         ctx.strokeStyle = dg; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(PAD, 106); ctx.lineTo(W - PAD, 106); ctx.stroke();
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
-        drawContainedSelfie(ctx, img, PAD, y, PW, PH, 'rgba(12, 8, 12, 0.95)');
+        ctx.save(); ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
         ctx.strokeStyle = 'rgba(196,117,138,0.16)'; ctx.lineWidth = 0.75; ctx.strokeRect(PAD, y, PW, PH);
         ctx.fillStyle = 'rgba(245,234,232,0.4)'; ctx.font = '400 8px "Lato",Arial,sans-serif';
         ctx.textAlign = 'left'; ctx.fillText(`0${i + 1}`, PAD + 6, y + 14);
@@ -945,7 +859,7 @@ function initPhotoBooth() {
         ctx.beginPath(); ctx.moveTo(PAD, 100); ctx.lineTo(W - PAD, 100); ctx.stroke();
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
-        drawContainedSelfie(ctx, img, PAD, y, PW, PH, '#0a0a0a');
+        ctx.save(); ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
         // Vignette
         const vg = ctx.createRadialGradient(PAD + PW / 2, y + PH / 2, PH * 0.28, PAD + PW / 2, y + PH / 2, PH * 0.72);
         vg.addColorStop(0, 'transparent'); vg.addColorStop(1, 'rgba(0,0,0,0.42)');
@@ -1016,20 +930,10 @@ function initPhotoBooth() {
       },
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
         const r = 9;
-        const sourceWidth = img.width || img.videoWidth || PW;
-        const sourceHeight = img.height || img.videoHeight || PH;
-        // Cover: fill slot completely, crop overflow (rounded clip handles the bounds)
-        const scale = Math.max(PW / sourceWidth, PH / sourceHeight);
-        const drawWidth = sourceWidth * scale;
-        const drawHeight = sourceHeight * scale;
-        const drawX = PAD + (PW - drawWidth) * 0.5;
-        const drawY = y + (PH - drawHeight) * 0.5;
-        // Rounded clip — covers overflow from scale
+        // Rounded clip
         ctx.save();
         this._roundedPhoto(ctx, PAD, y, PW, PH, r, () => ctx.clip());
-        ctx.fillStyle = 'rgba(255, 236, 242, 0.95)';
-        ctx.fillRect(PAD, y, PW, PH);
-        ctx.translate(drawX + drawWidth, drawY); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, drawWidth, drawHeight); ctx.restore();
+        ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
         // Pink tint
         this._roundedPhoto(ctx, PAD, y, PW, PH, r, () => { ctx.fillStyle = 'rgba(255,200,215,0.07)'; ctx.fill(); });
         // Rounded border
@@ -1090,7 +994,7 @@ function initPhotoBooth() {
       drawPhoto(ctx, img, PAD, y, PW, PH, i) {
         // Cream polaroid mat
         ctx.fillStyle = 'rgba(252,248,235,0.92)'; ctx.fillRect(PAD - 5, y - 5, PW + 10, PH + 10);
-        drawContainedSelfie(ctx, img, PAD, y, PW, PH, 'rgba(242, 232, 209, 0.9)');
+        ctx.save(); ctx.translate(PAD + PW, y); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, PW, PH); ctx.restore();
         // Sepia overlay
         ctx.fillStyle = 'rgba(150,100,45,0.2)'; ctx.fillRect(PAD, y, PW, PH);
         ctx.strokeStyle = 'rgba(90,58,28,0.22)'; ctx.lineWidth = 1; ctx.strokeRect(PAD, y, PW, PH);
@@ -1156,89 +1060,6 @@ function initPhotoBooth() {
 
   function pbWait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-  async function getCameraStream() {
-    const isSafariIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    // Safari iOS works best with plain width/height constraints (no aspectRatio/resizeMode)
-    const safariConstraints = {
-      video: {
-        facingMode: { ideal: 'user' },
-        width: { ideal: CAMERA_IDEAL_WIDTH },
-        height: { ideal: CAMERA_IDEAL_HEIGHT },
-      },
-      audio: false,
-    };
-
-    const primaryConstraints = {
-      video: {
-        facingMode: { ideal: 'user' },
-        width: { ideal: CAMERA_IDEAL_WIDTH },
-        height: { ideal: CAMERA_IDEAL_HEIGHT },
-        aspectRatio: { ideal: 16 / 9 },
-      },
-      audio: false,
-    };
-
-    const firstTry = isSafariIOS ? safariConstraints : primaryConstraints;
-
-    try {
-      return await navigator.mediaDevices.getUserMedia(firstTry);
-    } catch {
-      try {
-        return await navigator.mediaDevices.getUserMedia(primaryConstraints);
-      } catch {
-        return navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' },
-          audio: false,
-        });
-      }
-    }
-  }
-
-  function syncCameraWrapRatio() {
-    const source = getCaptureSourceSize();
-    const targetOrientation = getViewportOrientation();
-    const ratioWidth = source.orientation === targetOrientation ? source.width : source.height;
-    const ratioHeight = source.orientation === targetOrientation ? source.height : source.width;
-
-    if (!ratioWidth || !ratioHeight) return;
-    camWrap.style.aspectRatio = `${ratioWidth} / ${ratioHeight}`;
-  }
-
-  function captureOrientedFrame() {
-    const source = getCaptureSourceSize();
-    const rotateDeg = streamRotationDeg;
-
-    const fc = document.createElement('canvas');
-    const fctx = fc.getContext('2d');
-
-    fctx.filter = FILTER_MAP[selectedFilter] || 'none';
-
-    if (rotateDeg === 0) {
-      fc.width = source.width;
-      fc.height = source.height;
-      fctx.drawImage(video, 0, 0, source.width, source.height);
-    } else {
-      fc.width = source.height;
-      fc.height = source.width;
-
-      if (rotateDeg > 0) {
-        fctx.translate(fc.width, 0);
-        fctx.rotate(Math.PI / 2);
-      } else {
-        fctx.translate(0, fc.height);
-        fctx.rotate(-Math.PI / 2);
-      }
-
-      fctx.drawImage(video, 0, 0, source.width, source.height);
-    }
-
-    fctx.setTransform(1, 0, 0, 1, 0, 0);
-    if (selectedFilter === 'love') drawLoveStickers(fctx, fc.width, fc.height);
-    fctx.filter = 'none';
-    return fc;
-  }
-
   async function startCamera() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       startBtn.textContent = '⚠️ Browser tidak mendukung kamera';
@@ -1246,22 +1067,12 @@ function initPhotoBooth() {
       return;
     }
     try {
-      stream = await getCameraStream();
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 540 } },
+        audio: false,
+      });
       video.srcObject = stream;
       await video.play();
-
-      // Safari sometimes reports 0x0 immediately after play() — wait for metadata
-      if (!video.videoWidth || !video.videoHeight) {
-        await new Promise(resolve => {
-          video.addEventListener('loadedmetadata', resolve, { once: true });
-          setTimeout(resolve, 600);
-        });
-      }
-      syncCameraWrapRatio();
-      resolveStreamRotation();
-      window.addEventListener('resize', syncCameraWrapRatio);
-      window.addEventListener('orientationchange', syncCameraWrapRatio);
-
       video.classList.add('pb-active');
       video.style.filter = FILTER_MAP[selectedFilter] || 'none';
       syncLovestruckMode();
@@ -1298,7 +1109,17 @@ function initPhotoBooth() {
       camWrap.classList.add('pb-flash');
       setTimeout(() => camWrap.classList.remove('pb-flash'), 400);
 
-      const fc = captureOrientedFrame();
+      const fc = document.createElement('canvas');
+      fc.width = video.videoWidth || 640;
+      fc.height = video.videoHeight || 480;
+
+      const fctx = fc.getContext('2d');
+      fctx.filter = FILTER_MAP[selectedFilter] || 'none';
+      fctx.drawImage(video, 0, 0, fc.width, fc.height);
+      if (selectedFilter === 'love') {
+        drawLoveStickers(fctx, fc.width, fc.height);
+      }
+      fctx.filter = 'none';
 
       frames.push(fc);
       if (shotDots[i]) shotDots[i].classList.add('taken');
@@ -1328,10 +1149,7 @@ function initPhotoBooth() {
     const W = 400;
     const PAD = 22;
     const PW = W - PAD * 2;
-
-    // Each photo slot is always 16:9 landscape for consistent output across all devices
-    const PH = Math.round(PW * 9 / 16);
-
+    const PH = Math.round(PW * 3 / 4);
     const HEADER = 130;
     const FOOTER = 90;
     const GAP = 14;
@@ -1387,12 +1205,8 @@ function initPhotoBooth() {
       if (!entries[0].isIntersecting && stream) {
         stream.getTracks().forEach(t => t.stop());
         stream = null;
-        streamRotationDeg = 0;
         video.srcObject = null;
         video.classList.remove('pb-active');
-        window.removeEventListener('resize', syncCameraWrapRatio);
-        window.removeEventListener('orientationchange', syncCameraWrapRatio);
-        camWrap.style.aspectRatio = '';
         syncLovestruckMode();
         if (idleOverlay) idleOverlay.classList.remove('pb-hidden');
         startBtn.textContent = '📷 Buka Kamera';
