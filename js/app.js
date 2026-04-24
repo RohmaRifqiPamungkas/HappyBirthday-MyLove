@@ -781,16 +781,20 @@ function initPhotoBooth() {
     const sourceHeight = img.height || img.videoHeight || height;
     if (!sourceWidth || !sourceHeight) return;
 
-    const scale = Math.min(width / sourceWidth, height / sourceHeight);
+    // Cover: scale to fill slot completely, crop overflow
+    const scale = Math.max(width / sourceWidth, height / sourceHeight);
     const drawWidth = sourceWidth * scale;
     const drawHeight = sourceHeight * scale;
     const drawX = x + (width - drawWidth) * 0.5;
     const drawY = y + (height - drawHeight) * 0.5;
 
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, width, height);
+    ctx.clip();
+
     ctx.fillStyle = bgColor;
     ctx.fillRect(x, y, width, height);
-
-    ctx.save();
     ctx.translate(drawX + drawWidth, drawY);
     ctx.scale(-1, 1);
     ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
@@ -955,12 +959,13 @@ function initPhotoBooth() {
         const r = 9;
         const sourceWidth = img.width || img.videoWidth || PW;
         const sourceHeight = img.height || img.videoHeight || PH;
-        const scale = Math.min(PW / sourceWidth, PH / sourceHeight);
+        // Cover: fill slot completely, crop overflow (rounded clip handles the bounds)
+        const scale = Math.max(PW / sourceWidth, PH / sourceHeight);
         const drawWidth = sourceWidth * scale;
         const drawHeight = sourceHeight * scale;
         const drawX = PAD + (PW - drawWidth) * 0.5;
         const drawY = y + (PH - drawHeight) * 0.5;
-        // Rounded clip
+        // Rounded clip — covers overflow from scale
         ctx.save();
         this._roundedPhoto(ctx, PAD, y, PW, PH, r, () => ctx.clip());
         ctx.fillStyle = 'rgba(255, 236, 242, 0.95)';
